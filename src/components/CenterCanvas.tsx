@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { BookOpen, PenTool, Presentation, FileText, BarChart3, Target, TrendingUp, Users } from "lucide-react";
 import type { Post, BrandContext } from "@/types/content";
 import { generatePosts, generateImage } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
