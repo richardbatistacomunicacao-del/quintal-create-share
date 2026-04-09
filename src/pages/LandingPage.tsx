@@ -153,7 +153,73 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Pricing */}
+      {/* Dossiê Estratégico Showcase */}
+      <section className="py-16 sm:py-24 px-4 sm:px-6 border-t border-border">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-10 items-center">
+            <div>
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[hsl(var(--amber))]/10 text-[hsl(var(--amber))] text-xs font-heading font-bold mb-4">
+                <FileText className="w-3.5 h-3.5" />
+                Novo: Dossiê Estratégico
+              </span>
+              <h2 className="font-heading font-black text-2xl sm:text-3xl mb-4">
+                Impressione seus prospectos com dossiês profissionais
+              </h2>
+              <p className="text-muted-foreground leading-relaxed mb-6">
+                Gere dossiês completos com a identidade visual do cliente, dados de mercado, análise competitiva, 
+                SWOT, plano estratégico e recomendações — tudo personalizado e pronto para apresentar.
+              </p>
+              <ul className="flex flex-col gap-3">
+                {[
+                  "Dados de mercado e tendências do setor",
+                  "Análise competitiva com benchmarks",
+                  "SWOT e mapa de empatia do público",
+                  "Plano estratégico com ações práticas",
+                  "Identidade visual do cliente aplicada",
+                  "Exportação em PDF profissional",
+                ].map((item, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                    <Check className="w-4 h-4 text-[hsl(var(--amber))] mt-0.5 shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="relative">
+              <div className="rounded-2xl bg-surface-2 border border-border p-6 space-y-4">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center">
+                    <FileText className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-heading font-bold text-sm">Dossiê — Cafeteria Aroma</p>
+                    <p className="text-xs text-muted-foreground">Gerado em 12 segundos</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { label: "Mercado", value: "R$ 14.2 bi" },
+                    { label: "Crescimento", value: "+8.3% a.a." },
+                    { label: "Concorrentes", value: "12 mapeados" },
+                    { label: "Oportunidades", value: "7 identificadas" },
+                  ].map((stat, i) => (
+                    <div key={i} className="p-3 rounded-xl bg-surface-3 border border-border">
+                      <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-heading font-bold">{stat.label}</p>
+                      <p className="font-heading font-black text-lg text-primary">{stat.value}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="p-3 rounded-xl bg-surface-3 border border-border">
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-heading font-bold mb-1">Recomendação principal</p>
+                  <p className="text-xs text-foreground/80">Investir em programa de fidelidade digital com foco em recorrência e experiência personalizada.</p>
+                </div>
+              </div>
+              <div className="absolute -bottom-3 -right-3 w-20 h-20 bg-[hsl(var(--amber))]/5 rounded-full blur-[40px] pointer-events-none" />
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="py-16 sm:py-24 px-4 sm:px-6 border-t border-border" id="planos">
         <div className="max-w-5xl mx-auto">
           <h2 className="font-heading font-black text-2xl sm:text-3xl text-center mb-4">
