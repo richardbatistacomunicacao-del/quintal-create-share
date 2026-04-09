@@ -15,6 +15,7 @@ const LeftSidebar = ({ brand, setBrand, profileAnalysis, onProfileAnalyzed }: Le
   const [scanUrl, setScanUrl] = useState("");
   const [searchImg, setSearchImg] = useState("");
   const [isScanning, setIsScanning] = useState(false);
+  const [analysisTab, setAnalysisTab] = useState<"geral" | "swot" | "empatia" | "story">("geral");
   const logoInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -43,6 +44,7 @@ const LeftSidebar = ({ brand, setBrand, profileAnalysis, onProfileAnalyzed }: Le
     try {
       const analysis = await analyzeProfile(scanUrl);
       onProfileAnalyzed(analysis);
+      setAnalysisTab("geral");
       toast({ title: "✅ Perfil analisado!", description: `${analysis.name} - ${analysis.sector}` });
     } catch (e) {
       toast({ title: "Erro", description: e instanceof Error ? e.message : "Erro ao analisar", variant: "destructive" });
@@ -52,10 +54,10 @@ const LeftSidebar = ({ brand, setBrand, profileAnalysis, onProfileAnalyzed }: Le
   };
 
   const tagColorMap: Record<string, string> = {
-    green: "bg-primary/10 text-primary",
-    amber: "bg-amber/10 text-amber",
-    blue: "bg-blue/10 text-blue",
-    purple: "bg-purple/10 text-purple",
+    green: "bg-green-500/10 text-green-400",
+    amber: "bg-amber-500/10 text-amber-400",
+    blue: "bg-blue-500/10 text-blue-400",
+    purple: "bg-purple-500/10 text-purple-400",
   };
 
   return (
@@ -133,42 +135,177 @@ const LeftSidebar = ({ brand, setBrand, profileAnalysis, onProfileAnalyzed }: Le
           <div className="p-2.5">
             <div className="font-heading text-[8px] font-extrabold tracking-[0.12em] uppercase text-dim mb-2">Analisar Perfil / Site</div>
             <div className="flex gap-1.5 mb-2">
-              <input value={scanUrl} onChange={(e) => setScanUrl(e.target.value)} placeholder="Cole uma URL..." className="flex-1 bg-surface-2 border border-border rounded-[5px] text-foreground text-[11px] px-2 py-1.5 outline-none focus:border-primary/30 placeholder:text-dim" onKeyDown={(e) => e.key === "Enter" && handleScan()} />
+              <input value={scanUrl} onChange={(e) => setScanUrl(e.target.value)} placeholder="Cole uma URL ou @perfil..." className="flex-1 bg-surface-2 border border-border rounded-[5px] text-foreground text-[11px] px-2 py-1.5 outline-none focus:border-primary/30 placeholder:text-dim" onKeyDown={(e) => e.key === "Enter" && handleScan()} />
               <button onClick={handleScan} disabled={isScanning || !scanUrl.trim()} className="px-2.5 py-1.5 rounded-[5px] border-none bg-green-700 text-foreground font-heading font-bold text-[9px] cursor-pointer transition-colors hover:bg-primary flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed">
-                {isScanning ? "..." : "Ir"}
+                {isScanning ? (
+                  <span className="flex items-center gap-1">
+                    <span className="w-2.5 h-2.5 border-2 border-white/25 border-t-white rounded-full animate-spin" />
+                  </span>
+                ) : "Analisar"}
               </button>
             </div>
             <p className="text-[9.5px] text-muted-foreground leading-relaxed mb-3">
-              Cole qualquer URL: site, Instagram, Facebook, loja online. A IA lê o conteúdo e extrai identidade visual, tom de voz e sugere posts personalizados.
+              A IA extrai identidade visual completa: cores, fontes, temas, tom de voz, + análise SWOT, mapa de empatia e storytelling.
             </p>
 
-            {/* Analysis result */}
             {profileAnalysis && (
               <div className="bg-surface-2 border border-border rounded-lg overflow-hidden">
+                {/* Analysis tabs */}
+                <div className="flex border-b border-border">
+                  {([
+                    { id: "geral" as const, label: "Geral" },
+                    { id: "swot" as const, label: "SWOT" },
+                    { id: "empatia" as const, label: "Empatia" },
+                    { id: "story" as const, label: "Story" },
+                  ]).map((t) => (
+                    <button key={t.id} onClick={() => setAnalysisTab(t.id)} className={`flex-1 py-1.5 border-none font-heading font-bold text-[8px] cursor-pointer transition-colors text-center ${analysisTab === t.id ? "text-primary bg-primary/5" : "text-dim hover:text-muted-foreground"}`}>{t.label}</button>
+                  ))}
+                </div>
+
                 <div className="p-2.5">
-                  <div className="font-heading text-xs font-extrabold mb-1">{profileAnalysis.name}</div>
-                  <p className="text-[9.5px] text-muted-foreground leading-relaxed mb-2">{profileAnalysis.description}</p>
-                  <div className="flex gap-1 flex-wrap mb-2">
-                    {profileAnalysis.tags?.map((tag, i) => (
-                      <span key={i} className={`text-[8.5px] px-1.5 py-0.5 rounded-full ${tagColorMap[tag.category] || tagColorMap.green}`}>
-                        {tag.label}
-                      </span>
-                    ))}
-                  </div>
-                  {profileAnalysis.postSuggestions && (
-                    <div className="mt-2">
-                      <div className="font-heading text-[8px] font-extrabold tracking-[0.1em] uppercase text-dim mb-1">Sugestões de Posts</div>
-                      {profileAnalysis.postSuggestions.map((s, i) => (
-                        <div key={i} className="text-[9.5px] text-muted-foreground py-0.5">• {s}</div>
+                  {analysisTab === "geral" && (
+                    <>
+                      <div className="font-heading text-xs font-extrabold mb-1">{profileAnalysis.name}</div>
+                      <p className="text-[9.5px] text-muted-foreground leading-relaxed mb-2">{profileAnalysis.description}</p>
+                      
+                      {/* Colors */}
+                      <div className="font-heading text-[8px] font-extrabold tracking-[0.1em] uppercase text-dim mb-1">Cores</div>
+                      <div className="flex gap-1 flex-wrap mb-2">
+                        {profileAnalysis.colors?.map((c, i) => (
+                          <div key={i} className="w-6 h-6 rounded border border-border cursor-pointer" style={{ backgroundColor: c }} title={c} />
+                        ))}
+                      </div>
+
+                      {/* Fonts */}
+                      {profileAnalysis.fonts?.length > 0 && (
+                        <>
+                          <div className="font-heading text-[8px] font-extrabold tracking-[0.1em] uppercase text-dim mb-1">Fontes</div>
+                          <div className="flex gap-1 flex-wrap mb-2">
+                            {profileAnalysis.fonts.map((f, i) => (
+                              <span key={i} className="px-1.5 py-0.5 rounded bg-surface-3 border border-border text-[8.5px] text-muted-foreground">{f}</span>
+                            ))}
+                          </div>
+                        </>
+                      )}
+
+                      {/* Themes */}
+                      {profileAnalysis.themes?.length > 0 && (
+                        <>
+                          <div className="font-heading text-[8px] font-extrabold tracking-[0.1em] uppercase text-dim mb-1">Temas</div>
+                          <div className="flex gap-1 flex-wrap mb-2">
+                            {profileAnalysis.themes.map((t, i) => (
+                              <span key={i} className="px-1.5 py-0.5 rounded-full bg-blue-500/10 text-blue-400 text-[8px]">{t}</span>
+                            ))}
+                          </div>
+                        </>
+                      )}
+
+                      {/* Topics */}
+                      {profileAnalysis.topics?.length > 0 && (
+                        <>
+                          <div className="font-heading text-[8px] font-extrabold tracking-[0.1em] uppercase text-dim mb-1">Assuntos</div>
+                          <div className="flex gap-1 flex-wrap mb-2">
+                            {profileAnalysis.topics.map((t, i) => (
+                              <span key={i} className="px-1.5 py-0.5 rounded-full bg-purple-500/10 text-purple-400 text-[8px]">{t}</span>
+                            ))}
+                          </div>
+                        </>
+                      )}
+
+                      {/* Tags */}
+                      <div className="flex gap-1 flex-wrap mb-2">
+                        {profileAnalysis.tags?.map((tag, i) => (
+                          <span key={i} className={`text-[8.5px] px-1.5 py-0.5 rounded-full ${tagColorMap[tag.category] || tagColorMap.green}`}>
+                            {tag.label}
+                          </span>
+                        ))}
+                      </div>
+
+                      {/* Post suggestions */}
+                      {profileAnalysis.postSuggestions && (
+                        <div className="mt-2">
+                          <div className="font-heading text-[8px] font-extrabold tracking-[0.1em] uppercase text-dim mb-1">Sugestões de Posts</div>
+                          {profileAnalysis.postSuggestions.map((s, i) => (
+                            <div key={i} className="text-[9.5px] text-muted-foreground py-0.5">• {s}</div>
+                          ))}
+                        </div>
+                      )}
+
+                      {profileAnalysis.contentStrategy && (
+                        <div className="mt-2">
+                          <div className="font-heading text-[8px] font-extrabold tracking-[0.1em] uppercase text-dim mb-1">Estratégia</div>
+                          <p className="text-[9.5px] text-muted-foreground leading-relaxed">{profileAnalysis.contentStrategy}</p>
+                        </div>
+                      )}
+
+                      {profileAnalysis.audienceInsights && (
+                        <div className="mt-2">
+                          <div className="font-heading text-[8px] font-extrabold tracking-[0.1em] uppercase text-dim mb-1">Público-Alvo</div>
+                          <p className="text-[9.5px] text-muted-foreground leading-relaxed">{profileAnalysis.audienceInsights}</p>
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {analysisTab === "swot" && profileAnalysis.swot && (
+                    <div className="grid grid-cols-2 gap-2">
+                      {([
+                        { key: "strengths" as const, label: "💪 Forças", color: "text-green-400 bg-green-500/10" },
+                        { key: "weaknesses" as const, label: "⚠️ Fraquezas", color: "text-red-400 bg-red-500/10" },
+                        { key: "opportunities" as const, label: "🚀 Oportunidades", color: "text-blue-400 bg-blue-500/10" },
+                        { key: "threats" as const, label: "🔥 Ameaças", color: "text-amber-400 bg-amber-500/10" },
+                      ]).map(({ key, label, color }) => (
+                        <div key={key} className={`rounded-lg p-2 ${color.split(" ")[1]}`}>
+                          <div className={`font-heading text-[8px] font-extrabold mb-1.5 ${color.split(" ")[0]}`}>{label}</div>
+                          {profileAnalysis.swot![key].map((item, i) => (
+                            <div key={i} className="text-[9px] text-muted-foreground py-0.5 leading-snug">• {item}</div>
+                          ))}
+                        </div>
                       ))}
                     </div>
                   )}
-                  {profileAnalysis.contentStrategy && (
-                    <div className="mt-2">
-                      <div className="font-heading text-[8px] font-extrabold tracking-[0.1em] uppercase text-dim mb-1">Estratégia</div>
-                      <p className="text-[9.5px] text-muted-foreground leading-relaxed">{profileAnalysis.contentStrategy}</p>
+
+                  {analysisTab === "empatia" && profileAnalysis.empathyMap && (
+                    <div className="space-y-2">
+                      {([
+                        { key: "thinks" as const, label: "🧠 Pensa", emoji: "💭" },
+                        { key: "feels" as const, label: "❤️ Sente", emoji: "💗" },
+                        { key: "says" as const, label: "💬 Diz", emoji: "🗣️" },
+                        { key: "does" as const, label: "🏃 Faz", emoji: "⚡" },
+                        { key: "pains" as const, label: "😣 Dores", emoji: "🔴" },
+                        { key: "gains" as const, label: "🎯 Ganhos", emoji: "🟢" },
+                      ]).map(({ key, label }) => (
+                        <div key={key}>
+                          <div className="font-heading text-[8px] font-extrabold text-dim mb-1">{label}</div>
+                          <div className="flex flex-col gap-0.5">
+                            {profileAnalysis.empathyMap![key].map((item, i) => (
+                              <div key={i} className="text-[9px] text-muted-foreground leading-snug">• {item}</div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   )}
+
+                  {analysisTab === "story" && profileAnalysis.storytelling && (
+                    <div className="space-y-2">
+                      {([
+                        { key: "hero" as const, label: "🦸 Herói (Cliente)", color: "border-blue-500/30" },
+                        { key: "problem" as const, label: "😰 Problema", color: "border-red-500/30" },
+                        { key: "guide" as const, label: "🧭 Guia (Marca)", color: "border-green-500/30" },
+                        { key: "plan" as const, label: "📋 Plano", color: "border-amber-500/30" },
+                        { key: "callToAction" as const, label: "📢 Chamada para Ação", color: "border-purple-500/30" },
+                        { key: "success" as const, label: "🏆 Sucesso", color: "border-green-500/30" },
+                        { key: "failure" as const, label: "💀 Fracasso Evitado", color: "border-red-500/30" },
+                      ]).map(({ key, label, color }) => (
+                        <div key={key} className={`border-l-2 ${color} pl-2`}>
+                          <div className="font-heading text-[8px] font-extrabold text-dim mb-0.5">{label}</div>
+                          <p className="text-[9.5px] text-muted-foreground leading-relaxed">{profileAnalysis.storytelling![key]}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
                   <button
                     onClick={() => {
                       setBrand(prev => ({
@@ -177,12 +314,13 @@ const LeftSidebar = ({ brand, setBrand, profileAnalysis, onProfileAnalyzed }: Le
                         sector: profileAnalysis.sector || prev.sector,
                         tone: profileAnalysis.tone || prev.tone,
                         colors: profileAnalysis.colors?.length ? profileAnalysis.colors : prev.colors,
+                        font: profileAnalysis.fonts?.[0] || prev.font,
                       }));
                       toast({ title: "✅ Marca atualizada!", description: "Dados do perfil aplicados à marca." });
                     }}
-                    className="w-full mt-2 py-1.5 rounded-[5px] border border-primary/30 bg-primary/10 text-primary font-heading font-bold text-[9.5px] cursor-pointer transition-colors hover:bg-primary hover:text-primary-foreground"
+                    className="w-full mt-3 py-1.5 rounded-[5px] border border-primary/30 bg-primary/10 text-primary font-heading font-bold text-[9.5px] cursor-pointer transition-colors hover:bg-primary hover:text-primary-foreground"
                   >
-                    ✓ Aplicar + Gerar Posts
+                    ✓ Aplicar à Marca
                   </button>
                 </div>
               </div>

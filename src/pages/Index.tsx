@@ -24,8 +24,8 @@ const Index = () => {
 
   const handlePostsGenerated = useCallback((newPosts: Post[]) => {
     setPosts(newPosts);
-    if (newPosts.length > 0) setSelectedPostIndex(0);
-  }, []);
+    if (newPosts.length > 0 && selectedPostIndex === null) setSelectedPostIndex(0);
+  }, [selectedPostIndex]);
 
   const handleUpdatePost = useCallback((index: number, updated: Post) => {
     setPosts(prev => prev.map((p, i) => i === index ? updated : p));
@@ -39,6 +39,7 @@ const Index = () => {
       sector: analysis.sector || prev.sector,
       tone: analysis.tone || prev.tone,
       colors: analysis.colors?.length ? analysis.colors : prev.colors,
+      font: analysis.fonts?.[0] || prev.font,
     }));
   }, []);
 
@@ -61,6 +62,7 @@ const Index = () => {
           onPostsGenerated={handlePostsGenerated}
           isGenerating={isGenerating}
           setIsGenerating={setIsGenerating}
+          onUpdatePost={handleUpdatePost}
         />
         <RightSidebar
           selectedPost={selectedPost}

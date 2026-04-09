@@ -41,3 +41,17 @@ export async function generateCaption(
   if (data?.error) throw new Error(data.error);
   return data?.result || "";
 }
+
+export async function generateImage(
+  prompt: string,
+  style?: string,
+  brandContext?: BrandContext
+): Promise<string> {
+  const { data, error } = await supabase.functions.invoke("generate-image", {
+    body: { prompt, style, brandContext },
+  });
+
+  if (error) throw new Error(error.message || "Erro ao gerar imagem");
+  if (data?.error) throw new Error(data.error);
+  return data?.imageUrl || "";
+}
