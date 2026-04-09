@@ -15,15 +15,20 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    // Use AI to analyze the URL/profile
-    const systemPrompt = `Você é um especialista em análise de marcas e perfis de redes sociais. Analise a URL fornecida e extraia informações sobre a marca.
+    const systemPrompt = `Você é o maior especialista do mundo em análise de marcas, branding e estratégia de conteúdo digital.
 
-IMPORTANTE: Mesmo que você não consiga acessar a URL diretamente, use seu conhecimento para:
-1. Se for um @ de Instagram, analise com base no que você sabe sobre esse perfil
+Analise a URL/perfil fornecido e extraia a identidade visual COMPLETA e estratégias avançadas.
+
+IMPORTANTE: Use seu conhecimento profundo para:
+1. Se for um @ de Instagram/TikTok, analise com base no que você sabe sobre esse perfil
 2. Se for um site, analise com base no domínio e contexto
-3. Se for qualquer rede social, faça sua melhor análise
+3. Extraia TUDO: cores, fontes, temas, assuntos, tom de voz
+4. Crie análise SWOT completa do posicionamento digital
+5. Crie mapa de empatia do público-alvo
+6. Crie framework de storytelling da marca
 
-RESPONDA USANDO A FUNÇÃO FORNECIDA com dados realistas e úteis.`;
+Seja EXTREMAMENTE detalhado e preciso. Use dados realistas e úteis.
+RESPONDA USANDO A FUNÇÃO FORNECIDA.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -35,22 +40,25 @@ RESPONDA USANDO A FUNÇÃO FORNECIDA com dados realistas e úteis.`;
         model: "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: `Analise este perfil/site e extraia a identidade da marca: ${url}` },
+          { role: "user", content: `Analise PROFUNDAMENTE este perfil/site e extraia identidade visual completa, SWOT, mapa de empatia e storytelling: ${url}` },
         ],
         tools: [
           {
             type: "function",
             function: {
               name: "analyze_brand",
-              description: "Retorna análise completa de uma marca/perfil",
+              description: "Retorna análise completa e profunda de uma marca/perfil",
               parameters: {
                 type: "object",
                 properties: {
                   name: { type: "string", description: "Nome da marca/perfil" },
-                  description: { type: "string", description: "Descrição curta do negócio" },
+                  description: { type: "string", description: "Descrição detalhada do negócio" },
                   sector: { type: "string", description: "Setor/nicho de atuação" },
                   tone: { type: "string", description: "Tom de voz predominante" },
-                  colors: { type: "array", items: { type: "string" }, description: "Cores hex da marca" },
+                  colors: { type: "array", items: { type: "string" }, description: "Cores hex da marca (mínimo 5)" },
+                  fonts: { type: "array", items: { type: "string" }, description: "Fontes usadas ou sugeridas para a marca" },
+                  themes: { type: "array", items: { type: "string" }, description: "Temas principais do conteúdo (mínimo 5)" },
+                  topics: { type: "array", items: { type: "string" }, description: "Assuntos/tópicos frequentes (mínimo 8)" },
                   tags: {
                     type: "array",
                     items: {
@@ -61,17 +69,48 @@ RESPONDA USANDO A FUNÇÃO FORNECIDA com dados realistas e úteis.`;
                       },
                       required: ["label", "category"],
                     },
-                    description: "Tags descritivas",
+                    description: "Tags descritivas da marca",
                   },
-                  postSuggestions: {
-                    type: "array",
-                    items: { type: "string" },
-                    description: "5 sugestões de temas de posts",
+                  postSuggestions: { type: "array", items: { type: "string" }, description: "10 sugestões detalhadas de posts" },
+                  audienceInsights: { type: "string", description: "Insights profundos sobre o público-alvo" },
+                  contentStrategy: { type: "string", description: "Estratégia de conteúdo detalhada" },
+                  swot: {
+                    type: "object",
+                    properties: {
+                      strengths: { type: "array", items: { type: "string" }, description: "Forças (mínimo 4)" },
+                      weaknesses: { type: "array", items: { type: "string" }, description: "Fraquezas (mínimo 4)" },
+                      opportunities: { type: "array", items: { type: "string" }, description: "Oportunidades (mínimo 4)" },
+                      threats: { type: "array", items: { type: "string" }, description: "Ameaças (mínimo 4)" },
+                    },
+                    required: ["strengths", "weaknesses", "opportunities", "threats"],
                   },
-                  audienceInsights: { type: "string", description: "Insights sobre o público-alvo" },
-                  contentStrategy: { type: "string", description: "Estratégia de conteúdo sugerida" },
+                  empathyMap: {
+                    type: "object",
+                    properties: {
+                      thinks: { type: "array", items: { type: "string" }, description: "O que o público pensa" },
+                      feels: { type: "array", items: { type: "string" }, description: "O que o público sente" },
+                      says: { type: "array", items: { type: "string" }, description: "O que o público diz" },
+                      does: { type: "array", items: { type: "string" }, description: "O que o público faz" },
+                      pains: { type: "array", items: { type: "string" }, description: "Dores do público" },
+                      gains: { type: "array", items: { type: "string" }, description: "Ganhos desejados" },
+                    },
+                    required: ["thinks", "feels", "says", "does", "pains", "gains"],
+                  },
+                  storytelling: {
+                    type: "object",
+                    properties: {
+                      hero: { type: "string", description: "O herói (cliente)" },
+                      problem: { type: "string", description: "O problema" },
+                      guide: { type: "string", description: "O guia (marca)" },
+                      plan: { type: "string", description: "O plano" },
+                      callToAction: { type: "string", description: "A chamada para ação" },
+                      success: { type: "string", description: "O sucesso" },
+                      failure: { type: "string", description: "O fracasso evitado" },
+                    },
+                    required: ["hero", "problem", "guide", "plan", "callToAction", "success", "failure"],
+                  },
                 },
-                required: ["name", "description", "sector", "tone", "colors", "tags", "postSuggestions"],
+                required: ["name", "description", "sector", "tone", "colors", "fonts", "themes", "topics", "tags", "postSuggestions", "swot", "empathyMap", "storytelling"],
                 additionalProperties: false,
               },
             },
