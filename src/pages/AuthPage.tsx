@@ -1,15 +1,21 @@
 import { useState } from "react";
+import { Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import logoLight from "@/assets/logo-light.png";
 
 const AuthPage = () => {
+  const { user } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const { toast } = useToast();
+
+  if (user) return <Navigate to="/app" replace />;
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,14 +60,8 @@ const AuthPage = () => {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
-        {/* Logo */}
-        <div className="flex items-center justify-center gap-2 mb-8">
-          <div className="w-10 h-10 bg-gradient-to-br from-primary to-green-700 rounded-xl flex items-center justify-center text-xl">
-            🌿
-          </div>
-          <span className="font-heading font-black text-2xl tracking-tight">
-            Quintal<span className="text-primary">Posts</span>
-          </span>
+        <div className="flex items-center justify-center mb-8">
+          <img src={logoLight} alt="Quintal de Negócios" className="h-14" />
         </div>
 
         <div className="bg-surface-1 border border-border rounded-2xl p-6">

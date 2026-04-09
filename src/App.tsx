@@ -4,9 +4,10 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/useAuth";
-import Index from "./pages/Index.tsx";
-import AuthPage from "./pages/AuthPage.tsx";
-import NotFound from "./pages/NotFound.tsx";
+import LandingPage from "./pages/LandingPage";
+import Index from "./pages/Index";
+import AuthPage from "./pages/AuthPage";
+import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
@@ -18,7 +19,8 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/app" element={<Index />} />
             <Route path="/auth" element={<AuthPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
