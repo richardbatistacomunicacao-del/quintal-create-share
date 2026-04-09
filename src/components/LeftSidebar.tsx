@@ -2,6 +2,8 @@ import { useState, useRef } from "react";
 import type { BrandContext, ProfileAnalysis } from "@/types/content";
 import { analyzeProfile } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { downloadAnalysisAsText } from "@/lib/downloadAnalysis";
+import { supabase } from "@/integrations/supabase/client";
 
 interface LeftSidebarProps {
   brand: BrandContext;
