@@ -75,7 +75,7 @@ const LandingPage = () => {
       {/* Nav */}
       <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
         <div className="max-w-6xl mx-auto flex items-center justify-between px-4 sm:px-6 h-16">
-          <img src={logoLight} alt="Quintal de Negócios" className="h-10" />
+          <img src={logoLight} alt="Quintal de Negócios" className="h-14 sm:h-16" />
           <div className="flex items-center gap-3">
             {user ? (
               <button onClick={() => navigate("/app")} className="px-5 py-2 rounded-xl bg-primary text-primary-foreground font-heading font-bold text-sm hover:bg-primary/90 transition-colors">
@@ -103,13 +103,13 @@ const LandingPage = () => {
             Gerador de conteúdo com IA
           </div>
           <h1 className="font-heading font-black text-4xl sm:text-6xl lg:text-7xl leading-[1.05] tracking-tight mb-6">
-            Crie posts incríveis
+            Conteúdo profissional
             <br />
-            <span className="text-primary">em segundos</span>
+            <span className="text-primary">com IA em segundos</span>
           </h1>
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
-            Análise de perfil, geração de posts, legendas, hashtags e imagens com inteligência artificial. 
-            Tudo o que você precisa para suas redes sociais em um só lugar.
+            Posts, blogs, artigos, apresentações e dossiês estratégicos com a identidade da sua marca.
+            Tudo gerado por inteligência artificial, pronto para impressionar.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button onClick={handleCta} className="px-8 py-3.5 rounded-2xl bg-primary text-primary-foreground font-heading font-extrabold text-base hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20">
@@ -129,15 +129,23 @@ const LandingPage = () => {
           </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { title: "Scanner de Perfil", desc: "Analise qualquer perfil do Instagram com IA: SWOT, mapa de empatia e storytelling." },
-              { title: "Geração de Posts", desc: "Crie carrosséis, reels e posts únicos com textos, hashtags e CTAs otimizados." },
-              { title: "Legendas com IA", desc: "Gere legendas engajadoras alinhadas ao tom da sua marca automaticamente." },
-              { title: "Imagens com IA", desc: "Gere imagens exclusivas para seus posts usando inteligência artificial." },
-              { title: "Multi-marca", desc: "Gerencie múltiplas marcas com identidades visuais e tons de voz diferentes." },
-              { title: "Download de Análises", desc: "Exporte suas análises estratégicas completas para compartilhar com a equipe." },
+              { title: "Scanner de Perfil", desc: "Analise qualquer perfil do Instagram com IA: SWOT, mapa de empatia e storytelling.", icon: BarChart3 },
+              { title: "Geração de Posts", desc: "Crie carrosséis, reels e posts únicos com textos, hashtags e CTAs otimizados.", icon: Sparkles },
+              { title: "Blogs & Artigos", desc: "Gere blogs e artigos completos, otimizados para SEO, com o tom de voz da sua marca.", icon: BookOpen },
+              { title: "Textos & Copywriting", desc: "Crie textos persuasivos para e-mails, anúncios, páginas de venda e mais.", icon: PenTool },
+              { title: "Apresentações", desc: "Monte apresentações profissionais com dados de mercado e identidade visual do cliente.", icon: Presentation },
+              { title: "Dossiê Estratégico", desc: "Gere dossiês completos para prospecção: dados do mercado, análise competitiva e plano de ação.", icon: FileText },
+              { title: "Legendas com IA", desc: "Gere legendas engajadoras alinhadas ao tom da sua marca automaticamente.", icon: Sparkles },
+              { title: "Imagens com IA", desc: "Gere imagens exclusivas para seus posts usando inteligência artificial.", icon: Sparkles },
+              { title: "Multi-marca", desc: "Gerencie múltiplas marcas com identidades visuais e tons de voz diferentes.", icon: Sparkles },
             ].map((f, i) => (
               <div key={i} className="p-6 rounded-2xl bg-surface-1 border border-border hover:border-primary/20 transition-colors">
-                <h3 className="font-heading font-bold text-base mb-2">{f.title}</h3>
+                <div className="flex items-center gap-2.5 mb-3">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <f.icon className="w-4 h-4 text-primary" />
+                  </div>
+                  <h3 className="font-heading font-bold text-base">{f.title}</h3>
+                </div>
                 <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
               </div>
             ))}
@@ -228,7 +236,7 @@ const LandingPage = () => {
       {/* Footer */}
       <footer className="py-8 px-4 sm:px-6 border-t border-border">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <img src={logoLight} alt="Quintal de Negócios" className="h-8 opacity-60" />
+          <img src={logoLight} alt="Quintal de Negócios" className="h-10 opacity-60" />
           <p className="text-xs text-dim">
             © {new Date().getFullYear()} Quintal de Negócios. Todos os direitos reservados.
           </p>
