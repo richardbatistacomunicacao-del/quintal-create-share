@@ -14,7 +14,164 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      saved_analyses: {
+        Row: {
+          analysis_data: Json
+          created_at: string
+          id: string
+          url: string
+          user_id: string
+        }
+        Insert: {
+          analysis_data?: Json
+          created_at?: string
+          id?: string
+          url: string
+          user_id: string
+        }
+        Update: {
+          analysis_data?: Json
+          created_at?: string
+          id?: string
+          url?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      saved_brands: {
+        Row: {
+          colors: string[] | null
+          created_at: string
+          font: string | null
+          id: string
+          is_default: boolean | null
+          logo_url: string | null
+          name: string
+          sector: string | null
+          tone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          colors?: string[] | null
+          created_at?: string
+          font?: string | null
+          id?: string
+          is_default?: boolean | null
+          logo_url?: string | null
+          name?: string
+          sector?: string | null
+          tone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          colors?: string[] | null
+          created_at?: string
+          font?: string | null
+          id?: string
+          is_default?: boolean | null
+          logo_url?: string | null
+          name?: string
+          sector?: string | null
+          tone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      saved_posts: {
+        Row: {
+          bg_color: string | null
+          brand_id: string | null
+          caption: string | null
+          created_at: string
+          cta: string | null
+          hashtags: string | null
+          hook: string | null
+          id: string
+          image_url: string | null
+          slides: string[] | null
+          text_color: string | null
+          title: string
+          type: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bg_color?: string | null
+          brand_id?: string | null
+          caption?: string | null
+          created_at?: string
+          cta?: string | null
+          hashtags?: string | null
+          hook?: string | null
+          id?: string
+          image_url?: string | null
+          slides?: string[] | null
+          text_color?: string | null
+          title: string
+          type?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bg_color?: string | null
+          brand_id?: string | null
+          caption?: string | null
+          created_at?: string
+          cta?: string | null
+          hashtags?: string | null
+          hook?: string | null
+          id?: string
+          image_url?: string | null
+          slides?: string[] | null
+          text_color?: string | null
+          title?: string
+          type?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_posts_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "saved_brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
