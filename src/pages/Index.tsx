@@ -5,6 +5,7 @@ import TopBar from "@/components/TopBar";
 import LeftSidebar from "@/components/LeftSidebar";
 import CenterCanvas from "@/components/CenterCanvas";
 import RightSidebar from "@/components/RightSidebar";
+import CarameloChat from "@/components/CarameloChat";
 import type { Post, BrandContext, ProfileAnalysis } from "@/types/content";
 
 const Index = () => {
@@ -23,6 +24,8 @@ const Index = () => {
   const [profileAnalysis, setProfileAnalysis] = useState<ProfileAnalysis | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [mobilePanel, setMobilePanel] = useState<"left" | "center" | "right">("center");
+  // Track current brand name to detect brand switches
+  const [lastBrandName, setLastBrandName] = useState("");
 
   const selectedPost = selectedPostIndex !== null ? posts[selectedPostIndex] : null;
 
@@ -47,6 +50,23 @@ const Index = () => {
     }));
   }, []);
 
+  // Brand isolation: detect when brand name changes and clear content
+  const handleBrandChange = useCallback((newBrand: React.SetStateAction<BrandContext>) => {
+    setBrand(prev => {
+      const updated = typeof newBrand === 'function' ? newBrand(prev) : newBrand;
+      // If the brand name changed significantly, clear posts to avoid contamination
+      if (updated.name && lastBrandName && updated.name !== lastBrandName && updated.name.length > 2) {
+        setPosts([]);
+        setSelectedPostIndex(null);
+        setProfileAnalysis(null);
+      }
+      if (updated.name && updated.name.length > 2) {
+        setLastBrandName(updated.name);
+      }
+      return updated;
+    });
+  }, [lastBrandName]);
+
   if (loading) {
     return (
       <div className="h-screen flex items-center justify-center bg-background">
@@ -66,17 +86,19 @@ const Index = () => {
       <div className="h-[calc(100vh-48px)] overflow-hidden">
         {/* Desktop layout */}
         <div className="hidden md:grid md:grid-cols-[250px_1fr_300px] h-full">
-          <LeftSidebar brand={brand} setBrand={setBrand} profileAnalysis={profileAnalysis} onProfileAnalyzed={handleProfileAnalyzed} />
+          <LeftSidebar brand={brand} setBrand={handleBrandChange} profileAnalysis={profileAnalysis} onProfileAnalyzed={handleProfileAnalyzed} />
           <CenterCanvas activeView={activeView} brand={brand} posts={posts} selectedPostIndex={selectedPostIndex} onSelectPost={setSelectedPostIndex} onPostsGenerated={handlePostsGenerated} isGenerating={isGenerating} setIsGenerating={setIsGenerating} onUpdatePost={handleUpdatePost} />
           <RightSidebar selectedPost={selectedPost} selectedPostIndex={selectedPostIndex} brand={brand} onUpdatePost={handleUpdatePost} posts={posts} />
         </div>
         {/* Mobile layout */}
         <div className="md:hidden h-full">
-          {mobilePanel === "left" && <LeftSidebar brand={brand} setBrand={setBrand} profileAnalysis={profileAnalysis} onProfileAnalyzed={handleProfileAnalyzed} />}
+          {mobilePanel === "left" && <LeftSidebar brand={brand} setBrand={handleBrandChange} profileAnalysis={profileAnalysis} onProfileAnalyzed={handleProfileAnalyzed} />}
           {mobilePanel === "center" && <CenterCanvas activeView={activeView} brand={brand} posts={posts} selectedPostIndex={selectedPostIndex} onSelectPost={(i) => { setSelectedPostIndex(i); setMobilePanel("right"); }} onPostsGenerated={handlePostsGenerated} isGenerating={isGenerating} setIsGenerating={setIsGenerating} onUpdatePost={handleUpdatePost} />}
           {mobilePanel === "right" && <RightSidebar selectedPost={selectedPost} selectedPostIndex={selectedPostIndex} brand={brand} onUpdatePost={handleUpdatePost} posts={posts} />}
         </div>
       </div>
+      {/* Caramelo floating chat - always available */}
+      <CarameloChat />
     </div>
   );
 };
