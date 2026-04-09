@@ -61,7 +61,7 @@ const Index = () => {
   if (!user) return <Navigate to="/auth" replace />;
 
   return (
-    <div className="grid grid-rows-[48px_1fr] h-screen overflow-hidden">
+    <div className="grid grid-rows-[48px_1fr] h-screen overflow-hidden" style={{ overflow: 'hidden' }}>
       <TopBar activeView={activeView} onViewChange={setActiveView} mobilePanel={mobilePanel} setMobilePanel={setMobilePanel} />
       <div className="h-[calc(100vh-48px)] overflow-hidden">
         {/* Desktop layout */}
