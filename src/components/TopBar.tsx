@@ -23,6 +23,7 @@ const TopBar = ({ activeView, onViewChange }: TopBarProps) => {
         {[
           { id: "criar", label: "✨ Criar" },
           { id: "massa", label: "⚡ Em Massa" },
+          { id: "referencias", label: "📌 Referências" },
           { id: "agenda", label: "📅 Agenda" },
         ].map((tab) => (
           <button
