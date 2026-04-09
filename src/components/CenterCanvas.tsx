@@ -4,7 +4,6 @@ import BlogView from "@/components/content/BlogView";
 import TextView from "@/components/content/TextView";
 import DossieView from "@/components/content/DossieView";
 import PresentationView from "@/components/content/PresentationView";
-import type { Post, BrandContext } from "@/types/content";
 import { generatePosts, generateImage } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import PostCard from "@/components/PostCard";
