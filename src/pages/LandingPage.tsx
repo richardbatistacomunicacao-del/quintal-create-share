@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { Check, Sparkles, Zap, Crown, Leaf } from "lucide-react";
+import { Check, Sparkles, Zap, Crown, Leaf, FileText, Presentation, PenTool, BarChart3, BookOpen } from "lucide-react";
 import logoLight from "@/assets/logo-light.png";
 
 const plans = [
