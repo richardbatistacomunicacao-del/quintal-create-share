@@ -4,6 +4,7 @@ import BlogView from "@/components/content/BlogView";
 import TextView from "@/components/content/TextView";
 import DossieView from "@/components/content/DossieView";
 import PresentationView from "@/components/content/PresentationView";
+import SupportChat from "@/components/content/SupportChat";
 import { generatePosts, generateImage } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import PostCard from "@/components/PostCard";
@@ -322,6 +323,7 @@ const CenterCanvas = ({
         {activeView === "textos" && <TextView brand={brand} />}
         {activeView === "apresentacoes" && <PresentationView brand={brand} />}
         {activeView === "dossie" && <DossieView brand={brand} />}
+        {activeView === "suporte" && <SupportChat />}
       </div>
     </div>
   );
