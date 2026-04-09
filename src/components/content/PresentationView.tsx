@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Presentation } from "lucide-react";
+import { Presentation, Download, ChevronLeft, ChevronRight } from "lucide-react";
 import { generatePresentation, type PresentationResult } from "@/lib/api";
+import { downloadPresentationAsText } from "@/lib/downloadPdf";
 import type { BrandContext } from "@/types/content";
 import { useToast } from "@/hooks/use-toast";
 
@@ -36,8 +37,17 @@ const PresentationView = ({ brand }: PresentationViewProps) => {
     }
   };
 
-  const layoutColors: Record<string, string> = {
-    title: "from-primary/20 to-primary/5",
+  const layoutIcons: Record<string, string> = {
+    title: "🎯",
+    content: "📝",
+    "two-column": "📊",
+    stats: "📈",
+    quote: "💬",
+    cta: "🚀",
+  };
+
+  const layoutGradients: Record<string, string> = {
+    title: "from-[hsl(var(--purple))]/15 via-primary/5 to-transparent",
     content: "from-surface-3 to-surface-2",
     "two-column": "from-[hsl(var(--blue))]/10 to-surface-2",
     stats: "from-[hsl(var(--amber))]/10 to-surface-2",
@@ -46,7 +56,7 @@ const PresentationView = ({ brand }: PresentationViewProps) => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto w-full space-y-4">
+    <div className="max-w-4xl mx-auto w-full space-y-4">
       <div className="bg-surface-1 border border-border rounded-xl p-4">
         <div className="flex items-center gap-2 mb-3">
           <Presentation className="w-5 h-5 text-[hsl(var(--purple))]" />
@@ -90,75 +100,135 @@ const PresentationView = ({ brand }: PresentationViewProps) => {
       </div>
 
       {result && result.slides && result.slides.length > 0 && (
-        <div className="bg-surface-1 border border-border rounded-xl p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="font-heading font-black text-lg">{result.title}</h2>
+        <div className="bg-surface-1 border border-border rounded-xl overflow-hidden">
+          {/* Header bar */}
+          <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+            <div className="flex items-center gap-2">
+              <Presentation className="w-4 h-4 text-[hsl(var(--purple))]" />
+              <h2 className="font-heading font-black text-sm">{result.title}</h2>
+            </div>
             <div className="flex items-center gap-2">
               <span className="text-[10px] text-dim">{result.slides.length} slides</span>
               {result.estimatedDuration && <span className="text-[10px] text-dim">• {result.estimatedDuration}</span>}
-            </div>
-          </div>
-
-          {/* Slide thumbnails */}
-          <div className="flex gap-1.5 overflow-x-auto pb-2 scrollbar-thin">
-            {result.slides.map((slide, i) => (
               <button
-                key={i}
-                onClick={() => setActiveSlide(i)}
-                className={`flex-shrink-0 w-20 h-12 rounded-md border text-[8px] font-heading font-bold p-1.5 cursor-pointer transition-all truncate ${
-                  activeSlide === i ? "border-[hsl(var(--purple))] bg-[hsl(var(--purple))]/10 text-foreground" : "border-border bg-surface-2 text-dim hover:border-border"
-                }`}
+                onClick={() => downloadPresentationAsText(result)}
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[hsl(var(--purple))]/10 border border-[hsl(var(--purple))]/20 text-[hsl(var(--purple))] text-[10px] font-heading font-bold cursor-pointer hover:bg-[hsl(var(--purple))]/20 transition-colors"
               >
-                <span className="text-[7px] text-dim block">{i + 1}</span>
-                {slide.title}
+                <Download className="w-3 h-3" /> Download
               </button>
-            ))}
+            </div>
           </div>
 
-          {/* Active slide */}
-          {result.slides[activeSlide] && (
-            <div className={`rounded-xl border border-border p-6 bg-gradient-to-br ${layoutColors[result.slides[activeSlide].layout] || layoutColors.content} min-h-[200px]`}>
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[9px] text-dim font-heading font-bold uppercase">Slide {activeSlide + 1} — {result.slides[activeSlide].layout}</span>
-              </div>
-              <h3 className="font-heading font-black text-xl mb-1">{result.slides[activeSlide].title}</h3>
-              {result.slides[activeSlide].subtitle && (
-                <p className="text-sm text-muted-foreground mb-3">{result.slides[activeSlide].subtitle}</p>
-              )}
-              <ul className="space-y-1.5">
-                {result.slides[activeSlide].content.map((point, i) => (
-                  <li key={i} className="text-[13px] text-foreground/85 flex items-start gap-2">
-                    <span className="text-primary mt-0.5">•</span>
-                    {point}
-                  </li>
-                ))}
-              </ul>
-              {result.slides[activeSlide].notes && (
-                <div className="mt-4 p-2 rounded-lg bg-surface-1/50 border border-border">
-                  <span className="text-[9px] text-dim font-heading font-bold">🎤 Notas:</span>
-                  <p className="text-[10px] text-muted-foreground">{result.slides[activeSlide].notes}</p>
-                </div>
+          <div className="flex">
+            {/* Slide thumbnails sidebar */}
+            <div className="w-28 border-r border-border bg-surface-2/50 overflow-y-auto max-h-[500px] scrollbar-thin flex-shrink-0">
+              {result.slides.map((slide, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActiveSlide(i)}
+                  className={`w-full text-left p-2 border-b border-border/50 cursor-pointer transition-all ${
+                    activeSlide === i ? "bg-[hsl(var(--purple))]/10 border-l-2 border-l-[hsl(var(--purple))]" : "hover:bg-surface-3"
+                  }`}
+                >
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <span className="text-[8px] text-dim font-heading font-bold">{i + 1}</span>
+                    <span className="text-[10px]">{layoutIcons[slide.layout] || "📄"}</span>
+                  </div>
+                  <p className="text-[9px] font-heading font-bold text-foreground/80 line-clamp-2 leading-tight">{slide.title}</p>
+                </button>
+              ))}
+            </div>
+
+            {/* Main slide preview */}
+            <div className="flex-1 p-4">
+              {result.slides[activeSlide] && (
+                <>
+                  {/* Slide canvas - 16:9 aspect ratio */}
+                  <div className={`w-full aspect-video rounded-xl border border-border bg-gradient-to-br ${layoutGradients[result.slides[activeSlide].layout] || layoutGradients.content} p-8 flex flex-col justify-center relative overflow-hidden`}>
+                    {/* Slide number badge */}
+                    <div className="absolute top-3 right-3 text-[9px] text-dim font-heading font-bold bg-surface-1/50 backdrop-blur-sm px-2 py-0.5 rounded-full">
+                      {activeSlide + 1}/{result.slides.length}
+                    </div>
+                    
+                    {/* Layout type badge */}
+                    <div className="absolute top-3 left-3 text-[9px] text-dim font-heading font-bold uppercase tracking-wider bg-surface-1/50 backdrop-blur-sm px-2 py-0.5 rounded-full flex items-center gap-1">
+                      <span>{layoutIcons[result.slides[activeSlide].layout] || "📄"}</span>
+                      {result.slides[activeSlide].layout}
+                    </div>
+
+                    <div className="mt-4">
+                      <h3 className="font-heading font-black text-2xl mb-2 leading-tight">{result.slides[activeSlide].title}</h3>
+                      {result.slides[activeSlide].subtitle && (
+                        <p className="text-sm text-muted-foreground mb-4 font-body">{result.slides[activeSlide].subtitle}</p>
+                      )}
+                      
+                      {result.slides[activeSlide].layout === "two-column" ? (
+                        <div className="grid grid-cols-2 gap-4">
+                          {result.slides[activeSlide].content.map((point, i) => (
+                            <div key={i} className="flex items-start gap-2 p-2 rounded-lg bg-surface-1/30">
+                              <span className="text-primary font-heading font-bold text-sm mt-0.5">{i + 1}.</span>
+                              <p className="text-[12px] text-foreground/85 font-body leading-relaxed">{point}</p>
+                            </div>
+                          ))}
+                        </div>
+                      ) : result.slides[activeSlide].layout === "stats" ? (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                          {result.slides[activeSlide].content.map((point, i) => (
+                            <div key={i} className="p-3 rounded-lg bg-surface-1/30 border border-border/50 text-center">
+                              <p className="text-[12px] text-foreground/85 font-heading font-bold">{point}</p>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <ul className="space-y-2">
+                          {result.slides[activeSlide].content.map((point, i) => (
+                            <li key={i} className="text-[13px] text-foreground/85 flex items-start gap-2.5 font-body">
+                              <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0" />
+                              {point}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Notes */}
+                  {result.slides[activeSlide].notes && (
+                    <div className="mt-3 p-3 rounded-lg bg-surface-2 border border-border">
+                      <span className="text-[9px] text-dim font-heading font-bold uppercase tracking-wider">🎤 Notas do apresentador</span>
+                      <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">{result.slides[activeSlide].notes}</p>
+                    </div>
+                  )}
+
+                  {/* Navigation */}
+                  <div className="flex items-center justify-between mt-3">
+                    <button
+                      onClick={() => setActiveSlide(Math.max(0, activeSlide - 1))}
+                      disabled={activeSlide === 0}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-3 border border-border text-[10px] font-heading font-bold text-muted-foreground disabled:opacity-30 cursor-pointer hover:text-foreground transition-colors"
+                    >
+                      <ChevronLeft className="w-3 h-3" /> Anterior
+                    </button>
+                    <div className="flex gap-1">
+                      {result.slides.map((_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setActiveSlide(i)}
+                          className={`w-2 h-2 rounded-full cursor-pointer transition-all ${activeSlide === i ? "bg-[hsl(var(--purple))] scale-125" : "bg-surface-4 hover:bg-muted-foreground"}`}
+                        />
+                      ))}
+                    </div>
+                    <button
+                      onClick={() => setActiveSlide(Math.min(result.slides.length - 1, activeSlide + 1))}
+                      disabled={activeSlide === result.slides.length - 1}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-3 border border-border text-[10px] font-heading font-bold text-muted-foreground disabled:opacity-30 cursor-pointer hover:text-foreground transition-colors"
+                    >
+                      Próximo <ChevronRight className="w-3 h-3" />
+                    </button>
+                  </div>
+                </>
               )}
             </div>
-          )}
-
-          {/* Navigation */}
-          <div className="flex items-center justify-between">
-            <button
-              onClick={() => setActiveSlide(Math.max(0, activeSlide - 1))}
-              disabled={activeSlide === 0}
-              className="px-3 py-1 rounded-lg bg-surface-3 border border-border text-[10px] font-heading font-bold text-muted-foreground disabled:opacity-30 cursor-pointer"
-            >
-              ← Anterior
-            </button>
-            <span className="text-[10px] text-dim">{activeSlide + 1} / {result.slides.length}</span>
-            <button
-              onClick={() => setActiveSlide(Math.min(result.slides.length - 1, activeSlide + 1))}
-              disabled={activeSlide === result.slides.length - 1}
-              className="px-3 py-1 rounded-lg bg-surface-3 border border-border text-[10px] font-heading font-bold text-muted-foreground disabled:opacity-30 cursor-pointer"
-            >
-              Próximo →
-            </button>
           </div>
         </div>
       )}

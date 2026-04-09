@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { PenTool } from "lucide-react";
+import { PenTool, Download } from "lucide-react";
 import { generateText, type TextResult } from "@/lib/api";
+import { downloadTextAsPdf } from "@/lib/downloadPdf";
 import type { BrandContext } from "@/types/content";
 import { useToast } from "@/hooks/use-toast";
 
@@ -80,7 +81,15 @@ const TextView = ({ brand }: TextViewProps) => {
 
       {result && (
         <div className="bg-surface-1 border border-border rounded-xl p-4 space-y-3">
-          <h2 className="font-heading font-black text-lg">{result.title}</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="font-heading font-black text-lg">{result.title}</h2>
+            <button
+              onClick={() => downloadTextAsPdf(result.title, result.type, result.content, result.variations, result.tips)}
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[hsl(var(--blue))]/10 border border-[hsl(var(--blue))]/20 text-[hsl(var(--blue))] text-[10px] font-heading font-bold cursor-pointer hover:bg-[hsl(var(--blue))]/20 transition-colors"
+            >
+              <Download className="w-3 h-3" /> Download
+            </button>
+          </div>
           <span className="text-[10px] text-[hsl(var(--blue))] bg-[hsl(var(--blue))]/10 px-2 py-0.5 rounded-full font-heading font-bold">{result.type}</span>
           <div className="text-[13px] leading-relaxed text-foreground/90 whitespace-pre-wrap">
             {result.content}

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Post, BrandContext } from "@/types/content";
-import { generateCaption } from "@/lib/api";
+import { generateCaption, generateImage } from "@/lib/api";
+import { downloadPostsAsText } from "@/lib/downloadPdf";
 import { useToast } from "@/hooks/use-toast";
 
 interface RightSidebarProps {
@@ -15,6 +16,8 @@ const RightSidebar = ({ selectedPost, selectedPostIndex, brand, onUpdatePost, po
   const [activeTab, setActiveTab] = useState("editar");
   const [isLoadingCaption, setIsLoadingCaption] = useState(false);
   const [isLoadingHashtags, setIsLoadingHashtags] = useState(false);
+  const [isRegeneratingImage, setIsRegeneratingImage] = useState(false);
+  const [imageStyle, setImageStyle] = useState("moderno");
   const { toast } = useToast();
 
   const tabs = [
@@ -23,6 +26,8 @@ const RightSidebar = ({ selectedPost, selectedPostIndex, brand, onUpdatePost, po
     { id: "agendar", label: "AGENDAR" },
     { id: "exportar", label: "EXPORTAR" },
   ];
+
+  const imageStyles = ["moderno", "minimalista", "vibrante", "editorial", "fotográfico", "ilustração", "3D", "flat design", "aquarela", "neon", "vintage", "pixel art"];
 
   const handleCaptionAction = async (action: "regenerate" | "hook" | "aida" | "pas") => {
     if (!selectedPost || selectedPostIndex === null) return;
@@ -52,10 +57,49 @@ const RightSidebar = ({ selectedPost, selectedPostIndex, brand, onUpdatePost, po
     }
   };
 
+  const handleRegenerateImage = async () => {
+    if (!selectedPost || selectedPostIndex === null) return;
+    setIsRegeneratingImage(true);
+    try {
+      const imgPrompt = `${selectedPost.title}. ${selectedPost.hook}. Para post de rede social.`;
+      const imageUrl = await generateImage(imgPrompt, imageStyle, brand);
+      onUpdatePost(selectedPostIndex, { ...selectedPost, imageUrl, imagePrompt: imgPrompt });
+      toast({ title: "🖼️ Imagem atualizada!" });
+    } catch (e) {
+      toast({ title: "Erro", description: e instanceof Error ? e.message : "Erro ao gerar imagem", variant: "destructive" });
+    } finally {
+      setIsRegeneratingImage(false);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    if (!selectedPost || selectedPostIndex === null) return;
+    onUpdatePost(selectedPostIndex, { ...selectedPost, imageUrl: undefined, imagePrompt: undefined });
+    toast({ title: "🗑️ Imagem removida" });
+  };
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     toast({ title: "📋 Copiado!" });
   };
+
+  const fonts = [
+    "Inter", "Syne", "Poppins", "Montserrat", "Oswald", "Playfair Display",
+    "Roboto", "Open Sans", "Lato", "Raleway", "Nunito", "Ubuntu", "Merriweather",
+    "PT Sans", "Rubik", "Work Sans", "Fira Sans", "Quicksand", "Karla", "Cabin",
+    "Source Sans Pro", "Mulish", "Barlow", "Manrope", "DM Sans", "Space Grotesk",
+    "Outfit", "Plus Jakarta Sans", "Lexend", "Urbanist",
+    "Archivo", "Bricolage Grotesque", "Red Hat Display", "Figtree", "Albert Sans",
+    "Be Vietnam Pro", "Noto Sans", "IBM Plex Sans", "Libre Franklin",
+    "Titillium Web", "Exo 2", "Prompt", "Josefin Sans", "Comfortaa",
+    "Bebas Neue", "Anton", "Russo One", "Teko", "Orbitron",
+    "Cormorant Garamond", "Libre Baskerville", "Lora", "EB Garamond",
+    "Crimson Text", "Spectral", "Noto Serif", "Bitter", "Vollkorn",
+    "Dancing Script", "Pacifico", "Great Vibes", "Caveat", "Kalam",
+    "Permanent Marker", "Rock Salt",
+    "JetBrains Mono", "Fira Code", "Source Code Pro", "Space Mono",
+    "Abril Fatface", "Alfa Slab One", "Passion One", "Black Ops One",
+  ];
 
   return (
     <aside className="bg-surface-1 border-l border-border flex flex-col overflow-hidden">
@@ -80,9 +124,42 @@ const RightSidebar = ({ selectedPost, selectedPostIndex, brand, onUpdatePost, po
               <div className="p-2.5">
                 <div className="font-heading text-[8px] font-extrabold tracking-[0.1em] uppercase text-dim mb-2">Preview</div>
                 {/* Preview thumbnail */}
-                <div className="w-full aspect-[4/5] rounded-lg mb-3 flex flex-col items-center justify-center p-4 text-center" style={{ backgroundColor: selectedPost.bgColor || "#1C1E22" }}>
-                  <div className="font-heading font-extrabold text-base leading-tight mb-2" style={{ color: selectedPost.textColor || "#fff" }}>{selectedPost.title}</div>
-                  <div className="text-[10px] opacity-80" style={{ color: selectedPost.textColor || "#fff" }}>{selectedPost.hook}</div>
+                <div className="w-full aspect-[4/5] rounded-lg mb-3 flex flex-col items-center justify-center p-4 text-center relative overflow-hidden" style={{ backgroundColor: selectedPost.bgColor || "#1C1E22" }}>
+                  {selectedPost.imageUrl && (
+                    <>
+                      <img src={selectedPost.imageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    </>
+                  )}
+                  <div className="relative z-10">
+                    <div className="font-heading font-extrabold text-base leading-tight mb-2" style={{ color: selectedPost.textColor || "#fff" }}>{selectedPost.title}</div>
+                    <div className="text-[10px] opacity-80" style={{ color: selectedPost.textColor || "#fff" }}>{selectedPost.hook}</div>
+                  </div>
+                </div>
+
+                {/* Image controls */}
+                <div className="font-heading text-[8px] font-extrabold tracking-[0.1em] uppercase text-dim mb-2">🖼️ Imagem</div>
+                <div className="flex flex-wrap gap-1 mb-1.5">
+                  {imageStyles.slice(0, 8).map((s) => (
+                    <button key={s} onClick={() => setImageStyle(s)} className={`px-1.5 py-0.5 rounded text-[8px] cursor-pointer transition-colors ${imageStyle === s ? "bg-purple-500/20 text-purple-400 border border-purple-500/30" : "bg-surface-2 border border-border text-dim hover:text-muted-foreground"}`}>{s}</button>
+                  ))}
+                </div>
+                <div className="flex gap-1 mb-3">
+                  <button
+                    onClick={handleRegenerateImage}
+                    disabled={isRegeneratingImage}
+                    className="flex-1 py-1.5 rounded-[5px] border border-purple-500/30 bg-purple-500/10 text-purple-400 font-heading font-bold text-[8.5px] cursor-pointer transition-colors hover:bg-purple-500/20 disabled:opacity-40"
+                  >
+                    {isRegeneratingImage ? "Gerando..." : selectedPost.imageUrl ? "⟳ Nova Imagem" : "🖼️ Gerar Imagem"}
+                  </button>
+                  {selectedPost.imageUrl && (
+                    <button
+                      onClick={handleRemoveImage}
+                      className="px-2 py-1.5 rounded-[5px] border border-destructive/30 bg-destructive/10 text-destructive font-heading font-bold text-[8.5px] cursor-pointer hover:bg-destructive/20"
+                    >
+                      🗑️
+                    </button>
+                  )}
                 </div>
 
                 <div className="font-heading text-[8px] font-extrabold tracking-[0.1em] uppercase text-dim mb-2">Conteúdo</div>
@@ -110,9 +187,19 @@ const RightSidebar = ({ selectedPost, selectedPostIndex, brand, onUpdatePost, po
                   <span className="text-[10px] text-muted-foreground w-12 flex-shrink-0">Fundo</span>
                   <input type="color" value={selectedPost.bgColor || "#1C1E22"} onChange={(e) => selectedPostIndex !== null && onUpdatePost(selectedPostIndex, { ...selectedPost, bgColor: e.target.value })} className="w-7 h-6 rounded border border-border cursor-pointer p-0" />
                 </div>
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 mb-1.5">
                   <span className="text-[10px] text-muted-foreground w-12 flex-shrink-0">Texto</span>
                   <input type="color" value={selectedPost.textColor || "#FFFFFF"} onChange={(e) => selectedPostIndex !== null && onUpdatePost(selectedPostIndex, { ...selectedPost, textColor: e.target.value })} className="w-7 h-6 rounded border border-border cursor-pointer p-0" />
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] text-muted-foreground w-12 flex-shrink-0">Fonte</span>
+                  <select
+                    value={brand.font}
+                    onChange={() => {}}
+                    className="flex-1 bg-surface-2 border border-border rounded text-foreground text-[10px] px-1 py-0.5 outline-none"
+                  >
+                    {fonts.map((f) => (<option key={f}>{f}</option>))}
+                  </select>
                 </div>
 
                 {selectedPost.slides && selectedPost.slides.length > 0 && (
@@ -243,13 +330,37 @@ const RightSidebar = ({ selectedPost, selectedPostIndex, brand, onUpdatePost, po
         {activeTab === "exportar" && (
           <div className="p-2.5">
             <div className="font-heading text-[8px] font-extrabold tracking-[0.1em] uppercase text-dim mb-2">Post Atual</div>
-            <div className="grid grid-cols-2 gap-1 mb-4">
+            <div className="grid grid-cols-2 gap-1 mb-3">
               <button onClick={() => selectedPost && copyToClipboard(selectedPost.caption + "\n\n" + selectedPost.hashtags)} className="py-2 rounded-md border border-border text-muted-foreground font-heading font-bold text-[9px] cursor-pointer transition-colors text-center hover:text-foreground">📋 Copiar Texto</button>
               <button onClick={() => {
                 if (!posts.length) return;
                 const allText = posts.map((p, i) => `--- Post ${i + 1} ---\n${p.title}\n\n${p.caption}\n\n${p.hashtags}\n\nCTA: ${p.cta}`).join("\n\n");
                 copyToClipboard(allText);
               }} className="py-2 rounded-md border border-border text-muted-foreground font-heading font-bold text-[9px] cursor-pointer transition-colors text-center hover:text-foreground">📄 Copiar Todos</button>
+            </div>
+
+            <div className="font-heading text-[8px] font-extrabold tracking-[0.1em] uppercase text-dim mb-2">Download</div>
+            <div className="grid grid-cols-1 gap-1 mb-4">
+              <button
+                onClick={() => {
+                  if (selectedPost) {
+                    downloadPostsAsText([selectedPost]);
+                  }
+                }}
+                disabled={!selectedPost}
+                className="py-2 rounded-md border border-primary/30 bg-primary/10 text-primary font-heading font-bold text-[9px] cursor-pointer transition-colors text-center hover:bg-primary/20 disabled:opacity-40"
+              >
+                ⬇️ Download Post Atual
+              </button>
+              <button
+                onClick={() => {
+                  if (posts.length) downloadPostsAsText(posts);
+                }}
+                disabled={!posts.length}
+                className="py-2 rounded-md border border-primary/30 bg-primary/10 text-primary font-heading font-bold text-[9px] cursor-pointer transition-colors text-center hover:bg-primary/20 disabled:opacity-40"
+              >
+                ⬇️ Download Todos os Posts
+              </button>
             </div>
 
             <div className="font-heading text-[8px] font-extrabold tracking-[0.1em] uppercase text-dim mb-2">Formato de Saída</div>

@@ -118,7 +118,30 @@ const LeftSidebar = ({ brand, setBrand, profileAnalysis, onProfileAnalyzed }: Le
               <div className="flex items-center gap-1.5">
                 <span className="text-[10px] text-muted-foreground w-14 flex-shrink-0">Fonte</span>
                 <select value={brand.font} onChange={(e) => setBrand((b) => ({ ...b, font: e.target.value }))} className="flex-1 bg-surface-3 border border-border rounded text-foreground text-[10px] px-1 py-0.5 outline-none focus:border-primary/30">
-                  {["Inter", "Syne", "Poppins", "Montserrat", "Oswald", "Playfair Display"].map((f) => (<option key={f}>{f}</option>))}
+                {[
+                    "Inter", "Syne", "Poppins", "Montserrat", "Oswald", "Playfair Display",
+                    "Roboto", "Open Sans", "Lato", "Raleway", "Nunito", "Ubuntu", "Merriweather",
+                    "PT Sans", "Rubik", "Work Sans", "Fira Sans", "Quicksand", "Karla", "Cabin",
+                    "Source Sans Pro", "Mulish", "Barlow", "Manrope", "DM Sans", "Space Grotesk",
+                    "Outfit", "Plus Jakarta Sans", "Lexend", "Urbanist", "Satoshi", "General Sans",
+                    "Clash Display", "Cabinet Grotesk", "Switzer", "Archivo", "Bricolage Grotesque",
+                    "Geist", "Supreme", "Onest", "Red Hat Display", "Figtree", "Albert Sans",
+                    "Be Vietnam Pro", "Instrument Sans", "Wix Madefor Display", "Noto Sans",
+                    "IBM Plex Sans", "Libre Franklin", "Titillium Web", "Exo 2", "Prompt",
+                    "Josefin Sans", "Comfortaa", "Righteous", "Fredoka", "Baloo 2",
+                    "Bebas Neue", "Anton", "Russo One", "Teko", "Rajdhani", "Orbitron",
+                    "Press Start 2P", "Silkscreen", "VT323", "Major Mono Display",
+                    "Playfair Display SC", "Cormorant Garamond", "Libre Baskerville", "Lora",
+                    "EB Garamond", "Crimson Text", "Spectral", "Noto Serif", "Bitter",
+                    "Vollkorn", "Cardo", "Georgia", "Times New Roman", "Garamond",
+                    "Dancing Script", "Pacifico", "Great Vibes", "Sacramento", "Satisfy",
+                    "Caveat", "Kalam", "Patrick Hand", "Indie Flower", "Shadows Into Light",
+                    "Permanent Marker", "Rock Salt", "Gloria Hallelujah",
+                    "JetBrains Mono", "Fira Code", "Source Code Pro", "IBM Plex Mono", "Space Mono",
+                    "Courier Prime", "Anonymous Pro", "Inconsolata",
+                    "Abril Fatface", "Alfa Slab One", "Passion One", "Black Ops One",
+                    "Bungee", "Monoton", "Audiowide", "Faster One"
+                  ].map((f) => (<option key={f}>{f}</option>))}
                 </select>
               </div>
             </div>
