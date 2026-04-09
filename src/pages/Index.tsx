@@ -1,16 +1,22 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import TopBar from "@/components/TopBar";
+import LeftSidebar from "@/components/LeftSidebar";
+import CenterCanvas from "@/components/CenterCanvas";
+import RightSidebar from "@/components/RightSidebar";
 
-// IMPORTANT: Fully REPLACE this with your own code
-const PlaceholderIndex = () => {
-  // PLACEHOLDER: Replace this entire return statement with the user's app.
-  // The inline background color is intentionally not part of the design system.
+const Index = () => {
+  const [activeView, setActiveView] = useState("criar");
+
   return (
-    <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#fcfbf8' }}>
-      <img data-lovable-blank-page-placeholder="REMOVE_THIS" src="/placeholder.svg" alt="Your app will live here!" />
+    <div className="grid grid-rows-[48px_1fr] h-screen overflow-hidden">
+      <TopBar activeView={activeView} onViewChange={setActiveView} />
+      <div className="grid grid-cols-[250px_1fr_300px] h-[calc(100vh-48px)] overflow-hidden">
+        <LeftSidebar />
+        <CenterCanvas activeView={activeView} />
+        <RightSidebar />
+      </div>
     </div>
   );
 };
-
-const Index = PlaceholderIndex;
 
 export default Index;
