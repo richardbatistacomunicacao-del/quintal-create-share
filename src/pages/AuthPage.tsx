@@ -60,14 +60,8 @@ const AuthPage = () => {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
-        {/* Logo */}
-        <div className="flex items-center justify-center gap-2 mb-8">
-          <div className="w-10 h-10 bg-gradient-to-br from-primary to-green-700 rounded-xl flex items-center justify-center text-xl">
-            🌿
-          </div>
-          <span className="font-heading font-black text-2xl tracking-tight">
-            Quintal<span className="text-primary">Posts</span>
-          </span>
+        <div className="flex items-center justify-center mb-8">
+          <img src={logoLight} alt="Quintal de Negócios" className="h-14" />
         </div>
 
         <div className="bg-surface-1 border border-border rounded-2xl p-6">
