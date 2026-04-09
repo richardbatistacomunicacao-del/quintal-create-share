@@ -171,12 +171,12 @@ const CenterCanvas = ({
       </div>
 
       {/* Image style selector */}
-      {withImage && (
+      {(withImage || format === "carousel") && (
         <div className="flex items-center gap-1.5 px-3.5 py-1.5 border-b border-border bg-surface-1/50 flex-shrink-0">
-          <span className="text-[9px] text-dim font-heading font-bold">Estilo:</span>
+          <span className="text-[9px] text-dim font-heading font-bold">Estilo de Imagem:</span>
           <div className="flex gap-1 flex-wrap">
             {imageStyles.map((s) => (
-              <button key={s} onClick={() => setImageStyle(s)} className={`px-2 py-0.5 rounded-full text-[8.5px] cursor-pointer transition-colors ${imageStyle === s ? "bg-purple-500/20 text-purple-400 border border-purple-500/30" : "bg-surface-2 border border-border text-dim hover:text-muted-foreground"}`}>{s}</button>
+              <button key={s} onClick={() => { setImageStyle(s); if (!withImage) setWithImage(true); }} className={`px-2 py-0.5 rounded-full text-[8.5px] cursor-pointer transition-colors ${imageStyle === s ? "bg-purple-500/20 text-purple-400 border border-purple-500/30" : "bg-surface-2 border border-border text-dim hover:text-muted-foreground"}`}>{s}</button>
             ))}
           </div>
         </div>
