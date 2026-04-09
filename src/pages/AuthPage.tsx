@@ -16,7 +16,6 @@ const AuthPage = () => {
   const { toast } = useToast();
 
   if (user) return <Navigate to="/app" replace />;
-  const { toast } = useToast();
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
