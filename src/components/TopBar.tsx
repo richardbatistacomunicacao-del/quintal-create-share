@@ -1,38 +1,41 @@
-import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 interface TopBarProps {
   activeView: string;
   onViewChange: (view: string) => void;
+  mobilePanel: "left" | "center" | "right";
+  setMobilePanel: (p: "left" | "center" | "right") => void;
 }
 
-const TopBar = ({ activeView, onViewChange }: TopBarProps) => {
+const TopBar = ({ activeView, onViewChange, mobilePanel, setMobilePanel }: TopBarProps) => {
+  const { user, signOut } = useAuth();
+
   return (
-    <header className="h-12 bg-surface-1 border-b border-border flex items-center px-3.5 gap-2 z-50">
+    <header className="h-12 bg-surface-1 border-b border-border flex items-center px-2 md:px-3.5 gap-2 z-50">
       <div className="flex items-center gap-2 flex-shrink-0">
         <div className="w-7 h-7 bg-gradient-to-br from-primary to-green-700 rounded-lg flex items-center justify-center text-sm">
           🌿
         </div>
-        <span className="font-heading font-black text-sm tracking-tight">
+        <span className="font-heading font-black text-sm tracking-tight hidden sm:inline">
           Quintal<span className="text-primary">Posts</span>
         </span>
       </div>
 
-      <div className="w-px h-5 bg-border flex-shrink-0" />
+      <div className="w-px h-5 bg-border flex-shrink-0 hidden sm:block" />
 
-      <div className="flex bg-surface-2 border border-border rounded-lg p-0.5">
+      {/* Desktop nav */}
+      <div className="hidden md:flex bg-surface-2 border border-border rounded-lg p-0.5">
         {[
           { id: "criar", label: "✨ Criar" },
           { id: "massa", label: "⚡ Em Massa" },
-          { id: "referencias", label: "📌 Referências" },
+          { id: "referencias", label: "📌 Ref" },
           { id: "agenda", label: "📅 Agenda" },
         ].map((tab) => (
           <button
             key={tab.id}
             onClick={() => onViewChange(tab.id)}
-            className={`px-3 py-1 rounded-[5px] border-none font-heading font-bold text-[10px] tracking-wider cursor-pointer transition-all whitespace-nowrap ${
-              activeView === tab.id
-                ? "bg-surface-4 text-foreground"
-                : "text-dim hover:text-muted-foreground"
+            className={`px-2.5 py-1 rounded-[5px] border-none font-heading font-bold text-[10px] tracking-wider cursor-pointer transition-all whitespace-nowrap ${
+              activeView === tab.id ? "bg-surface-4 text-foreground" : "text-dim hover:text-muted-foreground"
             }`}
           >
             {tab.label}
@@ -40,16 +43,60 @@ const TopBar = ({ activeView, onViewChange }: TopBarProps) => {
         ))}
       </div>
 
+      {/* Mobile panel switcher */}
+      <div className="flex md:hidden bg-surface-2 border border-border rounded-lg p-0.5">
+        {[
+          { id: "left" as const, label: "☰" },
+          { id: "center" as const, label: "✨" },
+          { id: "right" as const, label: "🎨" },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setMobilePanel(tab.id)}
+            className={`px-3 py-1 rounded-[5px] border-none font-heading font-bold text-sm cursor-pointer transition-all ${
+              mobilePanel === tab.id ? "bg-surface-4 text-foreground" : "text-dim"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Mobile view switcher (when on center) */}
+      {mobilePanel === "center" && (
+        <div className="flex md:hidden bg-surface-2 border border-border rounded-lg p-0.5 ml-1">
+          {[
+            { id: "criar", label: "✨" },
+            { id: "massa", label: "⚡" },
+            { id: "referencias", label: "📌" },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => onViewChange(tab.id)}
+              className={`px-2 py-1 rounded-[5px] border-none text-xs cursor-pointer ${
+                activeView === tab.id ? "bg-surface-4 text-foreground" : "text-dim"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className="ml-auto flex items-center gap-1.5">
-        <button className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-border/50 text-muted-foreground font-heading font-bold text-[9.5px] tracking-wider cursor-pointer transition-colors hover:border-border hover:text-foreground whitespace-nowrap">
-          ☰ Marca
-        </button>
-        <button className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-border/50 text-muted-foreground font-heading font-bold text-[9.5px] tracking-wider cursor-pointer transition-colors hover:border-border hover:text-foreground whitespace-nowrap">
-          ⚙️ Editar
-        </button>
-        <button className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-primary/35 bg-primary/10 text-primary font-heading font-bold text-[9.5px] tracking-wider cursor-pointer transition-colors hover:bg-primary hover:text-primary-foreground whitespace-nowrap">
-          ⬇️ ZIP
-        </button>
+        {user && (
+          <>
+            <span className="text-[9px] text-dim hidden lg:inline truncate max-w-[120px]">
+              {user.user_metadata?.full_name || user.email}
+            </span>
+            <button
+              onClick={signOut}
+              className="inline-flex items-center gap-1 px-2 py-1 rounded-md border border-border/50 text-muted-foreground font-heading font-bold text-[9px] cursor-pointer transition-colors hover:text-foreground whitespace-nowrap"
+            >
+              Sair
+            </button>
+          </>
+        )}
       </div>
     </header>
   );
