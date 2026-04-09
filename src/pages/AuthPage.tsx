@@ -7,11 +7,15 @@ import { useAuth } from "@/hooks/useAuth";
 import logoLight from "@/assets/logo-light.png";
 
 const AuthPage = () => {
+  const { user } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const { toast } = useToast();
+
+  if (user) return <Navigate to="/app" replace />;
   const { toast } = useToast();
 
   const handleEmailAuth = async (e: React.FormEvent) => {
