@@ -323,7 +323,7 @@ const CenterCanvas = ({
         {activeView === "textos" && <TextView brand={brand} />}
         {activeView === "apresentacoes" && <PresentationView brand={brand} />}
         {activeView === "dossie" && <DossieView brand={brand} />}
-        {activeView === "suporte" && <SupportChat />}
+        
       </div>
     </div>
   );
