@@ -17,10 +17,10 @@ serve(async (req) => {
 
     let brandInfo = "";
     if (brandContext) {
-      brandInfo = ` Cores da marca: ${brandContext.colors?.join(", ") || ""}. Estilo: ${brandContext.tone || "profissional"}.`;
+      brandInfo = ` Brand colors: ${brandContext.colors?.join(", ") || ""}. Style: ${brandContext.tone || "professional"}.`;
     }
 
-    const imagePrompt = `Create a professional social media post image. ${prompt}. Style: ${style || "modern, clean, professional"}.${brandInfo} High quality, visually striking, suitable for Instagram/social media.`;
+    const imagePrompt = `Create a professional social media post image. ${prompt}. Style: ${style || "modern, clean, professional"}.${brandInfo} High quality, visually striking.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -29,7 +29,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3.1-flash-image-preview",
+        model: "google/gemini-2.5-flash-image",
         messages: [
           { role: "user", content: imagePrompt },
         ],
@@ -38,6 +38,8 @@ serve(async (req) => {
     });
 
     if (!response.ok) {
+      const errText = await response.text();
+      console.error("AI gateway error:", response.status, errText);
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: "Limite de requisições atingido." }), {
           status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -48,16 +50,44 @@ serve(async (req) => {
           status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      const t = await response.text();
-      console.error("AI image error:", response.status, t);
       throw new Error("Erro na geração de imagem");
     }
 
     const data = await response.json();
-    const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+    console.log("AI response keys:", JSON.stringify(Object.keys(data)));
+    
+    const message = data.choices?.[0]?.message;
+    console.log("Message keys:", message ? JSON.stringify(Object.keys(message)) : "no message");
+
+    // Try multiple paths to find the image
+    let imageUrl: string | null = null;
+
+    // Path 1: message.images array
+    if (message?.images?.length > 0) {
+      imageUrl = message.images[0]?.image_url?.url || message.images[0]?.url;
+      console.log("Found image via message.images");
+    }
+
+    // Path 2: message.content as array with image parts
+    if (!imageUrl && Array.isArray(message?.content)) {
+      const imagePart = message.content.find((p: any) => p.type === "image_url" || p.type === "image");
+      if (imagePart) {
+        imageUrl = imagePart.image_url?.url || imagePart.url;
+        console.log("Found image via content array");
+      }
+    }
+
+    // Path 3: inline_data in parts
+    if (!imageUrl && message?.content) {
+      const contentStr = typeof message.content === "string" ? message.content : JSON.stringify(message.content);
+      console.log("Content preview:", contentStr.substring(0, 200));
+    }
 
     if (!imageUrl) {
-      throw new Error("Nenhuma imagem foi gerada");
+      console.error("Full response structure:", JSON.stringify(data).substring(0, 500));
+      return new Response(JSON.stringify({ error: "Não foi possível gerar a imagem. Tente novamente.", fallback: true }), {
+        status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     return new Response(JSON.stringify({ imageUrl }), {
@@ -65,8 +95,8 @@ serve(async (req) => {
     });
   } catch (e) {
     console.error("generate-image error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Erro desconhecido" }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Erro desconhecido", fallback: true }), {
+      status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });
