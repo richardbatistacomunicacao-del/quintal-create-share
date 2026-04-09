@@ -2,6 +2,8 @@ import { useState, useRef } from "react";
 import type { BrandContext, ProfileAnalysis } from "@/types/content";
 import { analyzeProfile } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { downloadAnalysisAsText } from "@/lib/downloadAnalysis";
+import { supabase } from "@/integrations/supabase/client";
 
 interface LeftSidebarProps {
   brand: BrandContext;
@@ -322,6 +324,33 @@ const LeftSidebar = ({ brand, setBrand, profileAnalysis, onProfileAnalyzed }: Le
                   >
                     ✓ Aplicar à Marca
                   </button>
+                  <div className="flex gap-1.5 mt-2">
+                    <button
+                      onClick={() => downloadAnalysisAsText(profileAnalysis, scanUrl)}
+                      className="flex-1 py-1.5 rounded-[5px] border border-border text-muted-foreground font-heading font-bold text-[8.5px] cursor-pointer transition-colors hover:text-foreground text-center"
+                    >
+                      ⬇️ Download
+                    </button>
+                    <button
+                      onClick={async () => {
+                        try {
+                          const { data: { user } } = await supabase.auth.getUser();
+                          if (!user) return;
+                          await supabase.from("saved_analyses").insert({
+                            user_id: user.id,
+                            url: scanUrl,
+                            analysis_data: profileAnalysis as any,
+                          });
+                          toast({ title: "💾 Análise salva!" });
+                        } catch {
+                          toast({ title: "Erro ao salvar", variant: "destructive" });
+                        }
+                      }}
+                      className="flex-1 py-1.5 rounded-[5px] border border-border text-muted-foreground font-heading font-bold text-[8.5px] cursor-pointer transition-colors hover:text-foreground text-center"
+                    >
+                      💾 Salvar
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
