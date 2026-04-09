@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { BookOpen } from "lucide-react";
+import { BookOpen, Download } from "lucide-react";
 import { generateBlog, type BlogResult } from "@/lib/api";
+import { downloadBlogAsPdf } from "@/lib/downloadPdf";
 import type { BrandContext } from "@/types/content";
 import { useToast } from "@/hooks/use-toast";
 
@@ -82,7 +83,15 @@ const BlogView = ({ brand }: BlogViewProps) => {
         <div className="bg-surface-1 border border-border rounded-xl p-4 space-y-3">
           <div className="flex items-center justify-between">
             <h2 className="font-heading font-black text-lg">{result.title}</h2>
-            {result.readingTime && <span className="text-[10px] text-dim bg-surface-3 px-2 py-0.5 rounded-full">{result.readingTime}</span>}
+            <div className="flex items-center gap-2">
+              {result.readingTime && <span className="text-[10px] text-dim bg-surface-3 px-2 py-0.5 rounded-full">{result.readingTime}</span>}
+              <button
+                onClick={() => downloadBlogAsPdf(result.title, result.content, result.metaDescription, result.tags)}
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-primary/10 border border-primary/20 text-primary text-[10px] font-heading font-bold cursor-pointer hover:bg-primary/20 transition-colors"
+              >
+                <Download className="w-3 h-3" /> Download
+              </button>
+            </div>
           </div>
           {result.subtitle && <p className="text-sm text-muted-foreground">{result.subtitle}</p>}
           {result.metaDescription && (
