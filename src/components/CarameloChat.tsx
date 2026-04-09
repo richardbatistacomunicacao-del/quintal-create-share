@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { MessageCircle, Send, X, Minimize2 } from "lucide-react";
-import carameloAvatar from "@/assets/caramelo-avatar.png";
+import { Send, Minimize2 } from "lucide-react";
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/support-chat`;
 
@@ -88,15 +87,14 @@ const CarameloChat = () => {
 
   return (
     <>
-      {/* Floating button */}
+      {/* Floating button - emoji only, no copyrighted images */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-5 right-5 z-[9999] w-14 h-14 rounded-full bg-primary shadow-lg shadow-primary/30 flex items-center justify-center cursor-pointer hover:scale-110 transition-transform group"
+          className="fixed bottom-5 right-5 z-[9999] w-14 h-14 rounded-full bg-primary shadow-lg shadow-primary/30 flex items-center justify-center cursor-pointer hover:scale-110 transition-transform"
           title="Falar com o Caramelo 🐕"
         >
-          <img src={carameloAvatar} alt="Caramelo" className="w-10 h-10 rounded-full object-cover" />
-          {/* Notification dot */}
+          <span className="text-2xl">🐕</span>
           <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-destructive rounded-full border-2 border-background animate-pulse" />
         </button>
       )}
@@ -107,7 +105,7 @@ const CarameloChat = () => {
           {/* Header */}
           <div className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-primary/10 to-transparent border-b border-border flex-shrink-0">
             <div className="relative">
-              <img src={carameloAvatar} alt="Caramelo" className="w-9 h-9 rounded-full object-cover border-2 border-primary/30" />
+              <div className="w-9 h-9 rounded-full bg-primary/20 border-2 border-primary/30 flex items-center justify-center text-xl">🐕</div>
               <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-primary rounded-full border-2 border-surface-1" />
             </div>
             <div className="flex-1">
@@ -131,7 +129,7 @@ const CarameloChat = () => {
             {messages.map((msg, i) => (
               <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} gap-2`}>
                 {msg.role === "assistant" && (
-                  <img src={carameloAvatar} alt="Caramelo" className="w-6 h-6 rounded-full object-cover flex-shrink-0 mt-1" />
+                  <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 mt-1 text-sm">🐕</div>
                 )}
                 <div className={`max-w-[80%] px-3 py-2 rounded-2xl text-[12px] leading-relaxed font-body ${
                   msg.role === "user"
@@ -154,7 +152,7 @@ const CarameloChat = () => {
             ))}
             {isLoading && messages[messages.length - 1]?.role === "user" && (
               <div className="flex items-start gap-2">
-                <img src={carameloAvatar} alt="Caramelo" className="w-6 h-6 rounded-full object-cover flex-shrink-0 mt-1" />
+                <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 mt-1 text-sm">🐕</div>
                 <div className="bg-surface-3 px-3 py-2 rounded-2xl rounded-bl-sm">
                   <div className="flex gap-1">
                     <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
