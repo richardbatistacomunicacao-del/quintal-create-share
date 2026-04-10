@@ -7,6 +7,19 @@ const corsHeaders = {
 
 const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
 
+async function fetchWithRetry(url: string, options: RequestInit, maxRetries = 3): Promise<Response> {
+  for (let i = 0; i < maxRetries; i++) {
+    const response = await fetch(url, options);
+    if (response.status === 503 && i < maxRetries - 1) {
+      console.log(`Gemini 503, retry ${i + 1}/${maxRetries} in ${Math.pow(2, i)}s...`);
+      await new Promise(r => setTimeout(r, Math.pow(2, i) * 1000));
+      continue;
+    }
+    return response;
+  }
+  throw new Error("Max retries exceeded");
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -77,7 +90,7 @@ Responda em JSON com esta estrutura EXATA:
   "conclusion": "conclusão e próximos passos recomendados"
 }`;
 
-    const response = await fetch(GEMINI_URL, {
+    const response = await fetchWithRetry(GEMINI_URL, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${GEMINI_API_KEY}`,

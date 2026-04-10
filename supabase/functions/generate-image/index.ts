@@ -5,6 +5,19 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+async function fetchWithRetry(url: string, options: RequestInit, maxRetries = 3): Promise<Response> {
+  for (let i = 0; i < maxRetries; i++) {
+    const response = await fetch(url, options);
+    if (response.status === 503 && i < maxRetries - 1) {
+      console.log(`Gemini 503, retry ${i + 1}/${maxRetries} in ${Math.pow(2, i)}s...`);
+      await new Promise(r => setTimeout(r, Math.pow(2, i) * 1000));
+      continue;
+    }
+    return response;
+  }
+  throw new Error("Max retries exceeded");
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -22,8 +35,7 @@ serve(async (req) => {
 
     const imagePrompt = `Create a professional social media post image. ${prompt}. Style: ${style || "modern, clean, professional"}.${brandInfo} High quality, visually striking.`;
 
-    // Use Gemini native API for image generation
-    const response = await fetch(
+    const response = await fetchWithRetry(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GEMINI_API_KEY}`,
       {
         method: "POST",
@@ -49,8 +61,6 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    
-    // Extract image from Gemini native response
     const parts = data.candidates?.[0]?.content?.parts || [];
     let imageUrl: string | null = null;
 
