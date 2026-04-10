@@ -10,10 +10,26 @@ const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat
 async function fetchWithRetry(url: string, options: RequestInit, maxRetries = 3): Promise<Response> {
   for (let i = 0; i < maxRetries; i++) {
     const response = await fetch(url, options);
-    if (response.status === 503 && i < maxRetries - 1) {
-      console.log(`Gemini 503, retry ${i + 1}/${maxRetries} in ${Math.pow(2, i)}s...`);
+    if ((response.status === 503 || response.status === 429) && i < maxRetries - 1) {
+      console.log(`Gemini ${response.status}, retry ${i + 1}/${maxRetries} in ${Math.pow(2, i)}s...`);
       await new Promise(r => setTimeout(r, Math.pow(2, i) * 1000));
       continue;
+    }
+    // If still failing, try Lovable AI Gateway as fallback
+    if (response.status === 503 || response.status === 429) {
+      const LOVABLE_KEY = Deno.env.get("LOVABLE_API_KEY");
+      if (LOVABLE_KEY) {
+        console.log("Falling back to Lovable AI Gateway...");
+        const body = JSON.parse(options.body as string);
+        body.model = "google/gemini-2.5-flash";
+        const fallback = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${LOVABLE_KEY}`, "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        if (fallback.ok) return fallback;
+        console.log("Lovable fallback also failed:", fallback.status);
+      }
     }
     return response;
   }
