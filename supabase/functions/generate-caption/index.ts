@@ -56,7 +56,7 @@ ${action === "hashtags" ? "Retorne APENAS hashtags, nada mais." : "Retorne APENA
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gemini-2.5-flash",
+        model: "gemini-2.0-flash",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
