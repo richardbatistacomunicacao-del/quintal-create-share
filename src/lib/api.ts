@@ -1,6 +1,20 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Post, BrandContext, ProfileAnalysis } from "@/types/content";
 
+function getFriendlyError(error: any, data: any, defaultMsg: string): string {
+  const msg = data?.error || error?.message || "";
+  if (msg.includes("503") || msg.includes("UNAVAILABLE") || msg.includes("high demand") || msg.includes("Max retries")) {
+    return "🐕 O serviço de IA está sobrecarregado no momento. Tente novamente em 1-2 minutos!";
+  }
+  if (msg.includes("429") || msg.includes("Limite")) {
+    return "⏳ Muitas requisições! Aguarde alguns segundos e tente novamente.";
+  }
+  if (msg.includes("timeout") || msg.includes("context canceled") || msg.includes("DEADLINE")) {
+    return "⏱️ A resposta demorou demais. Tente novamente — às vezes a IA precisa de mais tempo!";
+  }
+  return msg || defaultMsg;
+}
+
 export async function generatePosts(
   prompt: string,
   format: string,
