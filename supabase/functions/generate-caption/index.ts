@@ -67,7 +67,7 @@ ${action === "hashtags" ? "Retorne APENAS hashtags, nada mais." : "Retorne APENA
     if (!response.ok) {
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: "Limite de requisições atingido." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       throw new Error("Erro na IA");
@@ -82,7 +82,7 @@ ${action === "hashtags" ? "Retorne APENAS hashtags, nada mais." : "Retorne APENA
   } catch (e) {
     console.error("generate-caption error:", e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Erro desconhecido" }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });

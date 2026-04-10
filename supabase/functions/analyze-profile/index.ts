@@ -138,7 +138,7 @@ RESPONDA USANDO A FUNÇÃO FORNECIDA.`;
     if (!response.ok) {
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: "Limite de requisições atingido." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       throw new Error("Erro na análise de IA");
@@ -160,7 +160,7 @@ RESPONDA USANDO A FUNÇÃO FORNECIDA.`;
   } catch (e) {
     console.error("analyze-profile error:", e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Erro desconhecido" }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });
