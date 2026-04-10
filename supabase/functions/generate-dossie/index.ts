@@ -107,7 +107,7 @@ Responda em JSON com esta estrutura EXATA:
 
     if (response.status === 429) {
       return new Response(JSON.stringify({ error: "Limite excedido. Tente novamente." }), {
-        status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
     if (!response.ok) {
@@ -132,7 +132,7 @@ Responda em JSON com esta estrutura EXATA:
   } catch (e) {
     console.error("generate-dossie error:", e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Erro desconhecido" }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });

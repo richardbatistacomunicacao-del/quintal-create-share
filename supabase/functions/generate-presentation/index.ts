@@ -93,7 +93,7 @@ Gere entre 8-12 slides completos e profissionais.`,
 
     if (response.status === 429) {
       return new Response(JSON.stringify({ error: "Limite excedido. Tente novamente." }), {
-        status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
     if (!response.ok) {
@@ -118,7 +118,7 @@ Gere entre 8-12 slides completos e profissionais.`,
   } catch (e) {
     console.error("generate-presentation error:", e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Erro desconhecido" }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });

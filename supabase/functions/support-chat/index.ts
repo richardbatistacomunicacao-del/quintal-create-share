@@ -80,13 +80,13 @@ REGRAS:
     if (!response.ok) {
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: "Calma, parceiro! 🐕 Muitas requisições. Tenta de novo em alguns segundos." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       const t = await response.text();
       console.error("Gemini error:", response.status, t);
       return new Response(JSON.stringify({ error: "Erro no serviço de IA" }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -96,7 +96,7 @@ REGRAS:
   } catch (e) {
     console.error("support-chat error:", e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Erro desconhecido" }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });

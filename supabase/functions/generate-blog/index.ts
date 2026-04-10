@@ -86,7 +86,7 @@ Responda em JSON com esta estrutura:
 
     if (response.status === 429) {
       return new Response(JSON.stringify({ error: "Limite de requisições excedido. Tente novamente em alguns segundos." }), {
-        status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
     if (!response.ok) {
@@ -112,7 +112,7 @@ Responda em JSON com esta estrutura:
   } catch (e) {
     console.error("generate-blog error:", e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Erro desconhecido" }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });
