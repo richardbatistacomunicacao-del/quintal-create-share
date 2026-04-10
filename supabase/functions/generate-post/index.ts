@@ -139,10 +139,13 @@ Retorne um array JSON com ${qty} post(s). Cada post deve ter:
     });
 
     if (!response.ok) {
+      const errBody = await response.text();
+      console.error("Gemini API error:", response.status, errBody);
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: "Limite de requisições atingido. Tente novamente em alguns segundos." }), {
           status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
+      }
       }
       const t = await response.text();
       console.error("Gemini error:", response.status, t);
