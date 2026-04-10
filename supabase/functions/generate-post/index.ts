@@ -146,9 +146,6 @@ Retorne um array JSON com ${qty} post(s). Cada post deve ter:
           status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      }
-      const t = await response.text();
-      console.error("Gemini error:", response.status, t);
       throw new Error("Erro na geração de IA");
     }
 
