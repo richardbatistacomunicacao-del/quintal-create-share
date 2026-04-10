@@ -5,7 +5,19 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-serve(async (req) => {
+async function fetchWithRetry(url: string, options: RequestInit, maxRetries = 3): Promise<Response> {
+  for (let i = 0; i < maxRetries; i++) {
+    const response = await fetch(url, options);
+    if (response.status === 503 && i < maxRetries - 1) {
+      console.log(`Gemini 503, retry ${i + 1}/${maxRetries} in ${Math.pow(2, i)}s...`);
+      await new Promise(r => setTimeout(r, Math.pow(2, i) * 1000));
+      continue;
+    }
+    return response;
+  }
+  throw new Error("Max retries exceeded");
+}
+
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
