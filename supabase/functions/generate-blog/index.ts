@@ -69,7 +69,7 @@ Responda em JSON com esta estrutura:
   "readingTime": "X min de leitura"
 }`;
 
-    const response = await fetch(GEMINI_URL, {
+    const response = await fetchWithRetry(GEMINI_URL, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${GEMINI_API_KEY}`,

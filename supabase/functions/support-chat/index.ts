@@ -61,7 +61,7 @@ REGRAS:
 - Ajude a resolver problemas técnicos da plataforma
 - Sugira funcionalidades quando fizer sentido no contexto`;
 
-    const response = await fetch(GEMINI_URL, {
+    const response = await fetchWithRetry(GEMINI_URL, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${GEMINI_API_KEY}`,

@@ -7,7 +7,7 @@ const corsHeaders = {
 
 async function fetchWithRetry(url: string, options: RequestInit, maxRetries = 3): Promise<Response> {
   for (let i = 0; i < maxRetries; i++) {
-    const response = await fetch(url, options);
+    const response = await fetchWithRetry(url, options);
     if (response.status === 503 && i < maxRetries - 1) {
       console.log(`Gemini 503, retry ${i + 1}/${maxRetries} in ${Math.pow(2, i)}s...`);
       await new Promise(r => setTimeout(r, Math.pow(2, i) * 1000));
@@ -35,7 +35,7 @@ async function fetchWithRetry(url: string, options: RequestInit, maxRetries = 3)
     const imagePrompt = `Create a professional social media post image. ${prompt}. Style: ${style || "modern, clean, professional"}.${brandInfo} High quality, visually striking.`;
 
     // Use Gemini native API for image generation
-    const response = await fetch(
+    const response = await fetchWithRetry(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GEMINI_API_KEY}`,
       {
         method: "POST",

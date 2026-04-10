@@ -45,7 +45,7 @@ IMPORTANTE: Use seu conhecimento profundo para:
 Seja EXTREMAMENTE detalhado e preciso. Use dados realistas e úteis.
 RESPONDA USANDO A FUNÇÃO FORNECIDA.`;
 
-    const response = await fetch(GEMINI_URL, {
+    const response = await fetchWithRetry(GEMINI_URL, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${GEMINI_API_KEY}`,

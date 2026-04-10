@@ -88,7 +88,7 @@ Retorne um array JSON com ${qty} post(s). Cada post deve ter:
   ]
 }`;
 
-    const response = await fetch(GEMINI_URL, {
+    const response = await fetchWithRetry(GEMINI_URL, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${GEMINI_API_KEY}`,
