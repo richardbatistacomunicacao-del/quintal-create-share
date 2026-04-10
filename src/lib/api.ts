@@ -26,8 +26,8 @@ export async function generatePosts(
     body: { prompt, format, network, quantity, brandContext },
   });
 
-  if (error) throw new Error(error.message || "Erro ao gerar posts");
-  if (data?.error) throw new Error(data.error);
+  if (error) throw new Error(getFriendlyError(error, data, "Erro ao gerar posts"));
+  if (data?.error) throw new Error(getFriendlyError(null, data, "Erro ao gerar posts"));
   return data?.posts || [];
 }
 
@@ -36,8 +36,8 @@ export async function analyzeProfile(url: string): Promise<ProfileAnalysis> {
     body: { url },
   });
 
-  if (error) throw new Error(error.message || "Erro ao analisar perfil");
-  if (data?.error) throw new Error(data.error);
+  if (error) throw new Error(getFriendlyError(error, data, "Erro ao analisar perfil"));
+  if (data?.error) throw new Error(getFriendlyError(null, data, "Erro ao analisar perfil"));
   return data;
 }
 
@@ -51,8 +51,8 @@ export async function generateCaption(
     body: { action, context, currentCaption, brandContext },
   });
 
-  if (error) throw new Error(error.message || "Erro ao gerar legenda");
-  if (data?.error) throw new Error(data.error);
+  if (error) throw new Error(getFriendlyError(error, data, "Erro ao gerar legenda"));
+  if (data?.error) throw new Error(getFriendlyError(null, data, "Erro ao gerar legenda"));
   return data?.result || "";
 }
 
@@ -65,8 +65,8 @@ export async function generateImage(
     body: { prompt, style, brandContext },
   });
 
-  if (error) throw new Error(error.message || "Erro ao gerar imagem");
-  if (data?.error) throw new Error(data.error);
+  if (error) throw new Error(getFriendlyError(error, data, "Erro ao gerar imagem"));
+  if (data?.error) throw new Error(getFriendlyError(null, data, "Erro ao gerar imagem"));
   return data?.imageUrl || "";
 }
 
@@ -87,8 +87,8 @@ export async function generateBlog(
   const { data, error } = await supabase.functions.invoke("generate-blog", {
     body: { topic, type, brandContext },
   });
-  if (error) throw new Error(error.message || "Erro ao gerar blog");
-  if (data?.error) throw new Error(data.error);
+  if (error) throw new Error(getFriendlyError(error, data, "Erro ao gerar blog"));
+  if (data?.error) throw new Error(getFriendlyError(null, data, "Erro ao gerar blog"));
   return data;
 }
 
@@ -108,8 +108,8 @@ export async function generateText(
   const { data, error } = await supabase.functions.invoke("generate-text", {
     body: { topic, type, brandContext },
   });
-  if (error) throw new Error(error.message || "Erro ao gerar texto");
-  if (data?.error) throw new Error(data.error);
+  if (error) throw new Error(getFriendlyError(error, data, "Erro ao gerar texto"));
+  if (data?.error) throw new Error(getFriendlyError(null, data, "Erro ao gerar texto"));
   return data;
 }
 
@@ -149,8 +149,8 @@ export async function generateDossie(
   const { data, error } = await supabase.functions.invoke("generate-dossie", {
     body: { prospect, brandContext },
   });
-  if (error) throw new Error(error.message || "Erro ao gerar dossiê");
-  if (data?.error) throw new Error(data.error);
+  if (error) throw new Error(getFriendlyError(error, data, "Erro ao gerar dossiê"));
+  if (data?.error) throw new Error(getFriendlyError(null, data, "Erro ao gerar dossiê"));
   return data;
 }
 
@@ -178,7 +178,7 @@ export async function generatePresentation(
   const { data, error } = await supabase.functions.invoke("generate-presentation", {
     body: { topic, type, brandContext },
   });
-  if (error) throw new Error(error.message || "Erro ao gerar apresentação");
-  if (data?.error) throw new Error(data.error);
+  if (error) throw new Error(getFriendlyError(error, data, "Erro ao gerar apresentação"));
+  if (data?.error) throw new Error(getFriendlyError(null, data, "Erro ao gerar apresentação"));
   return data;
 }
