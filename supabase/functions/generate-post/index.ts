@@ -95,7 +95,7 @@ Retorne um array JSON com ${qty} post(s). Cada post deve ter:
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gemini-2.0-flash",
+        model: "gemini-2.5-flash",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: `Crie ${qty} post(s) para ${networkDesc} no formato ${formatDesc}. Tema: ${prompt}` },
